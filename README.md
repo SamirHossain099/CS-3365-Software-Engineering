@@ -1,5 +1,12 @@
 # Movie Booking System Project
 
+## Description
+This project is a **Movie Booking System (MBS)** developed for a chain of six movie theaters
+facing issues with long lines and declining ticket sales. Our solution enables users to conveniently
+buy tickets online, with options to print or display them on their personal devices for easy theater access.
+Key features include user registration and login, browsing and searching movie catalogs, secure ticket booking,
+electronic ticket generation, and user movie reviews.
+
 ## Installation
   1. First create a virtual environment for python libraries.
 ```
@@ -37,12 +44,6 @@ npm run start
 - Mateo Blondet
 - Rocco Swaney
 
-## Description
-This project is a **Movie Booking System (MBS)** developed for a chain of six movie theaters
-facing issues with long lines and declining ticket sales. Our solution enables users to conveniently
-buy tickets online, with options to print or display them on their personal devices for easy theater access.
-Key features include user registration and login, browsing and searching movie catalogs, secure ticket booking,
-electronic ticket generation, and user movie reviews.
 ### Key Features
 - **User Registration & Login**: Securely register users to manage bookings and personal data.
 - **Movie Catalog Browsing & Search**: Display and search for current and upcoming movies with
