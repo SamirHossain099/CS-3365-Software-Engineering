@@ -37,9 +37,9 @@ class Review(models.Model):
         try:
             reviews = cls.objects.filter(movie_id=movie_id)
             return [{
-                'review_id': review.review_id,
-                'user_id': review.user.user_id,
-                'user_name': review.user.name,
+                'review_id': review.id,
+                'user_id': review.user.id,
+                'user_name': review.user.username,
                 'rating': review.rating,
                 'review_text': review.review_text,
                 'created_at': review.created_at
