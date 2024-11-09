@@ -27,6 +27,15 @@ class AdminLogCreateView(View):
             admin_id = data.get('admin_id')
             action = data.get('action')
 
+            # Convert admin_id to int for validation
+            try:
+                admin_id = int(admin_id)
+            except (TypeError, ValueError):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Invalid admin_id format'
+                }, status=400)
+
             # validate that required fields are present
             if not all([admin_id, action]):
                 return JsonResponse({
