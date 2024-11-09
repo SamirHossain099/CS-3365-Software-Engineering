@@ -1,8 +1,14 @@
 from django.urls import path
-from . import views
+from .views import (
+    BookingListView,
+    BookingCreateView,
+    BookingsByUserView,
+    BookingCancelView
+)
 
 urlpatterns = [
-    path('logs/', views.AdminLogListView.as_view(), name='admin-logs-list'),
-    path('log/create/', views.AdminLogCreateView.as_view(), name='admin-log-create'),
-    path('log/<int:admin_id>/', views.AdminLogsByAdminView.as_view(), name='admin-logs-by-admin'),
+    path('', BookingListView.as_view(), name='booking-list'),
+    path('create/', BookingCreateView.as_view(), name='booking-create'),
+    path('user/<int:user_id>/', BookingsByUserView.as_view(), name='bookings-by-user'),
+    path('cancel/<int:booking_id>/', BookingCancelView.as_view(), name='booking-cancel'),
 ]
