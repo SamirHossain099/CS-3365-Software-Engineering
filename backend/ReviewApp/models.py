@@ -12,8 +12,8 @@ class Review(models.Model):
     @classmethod
     def add_review(cls, user_id, movie_id, rating, review_text):
         try:
-            user = User.objects.get(id=user_id)
-            movie = Movie.objects.get(id=movie_id)
+            user = User.objects.get(user_id=user_id)
+            movie = Movie.objects.get(movie_id=movie_id)
             review = cls.objects.create(
                 user=user,
                 movie=movie,
@@ -42,8 +42,8 @@ class Review(models.Model):
             reviews = cls.objects.filter(movie_id=movie_id)
             return [{
                 'review_id': review.id,
-                'user_id': review.user.id,
-                'user_name': review.user.username,
+                'user_id': review.user.user_id,
+                'user_name': review.user.name,
                 'rating': review.rating,
                 'review_text': review.review_text,
                 'created_at': review.created_at
