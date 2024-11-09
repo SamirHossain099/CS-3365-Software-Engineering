@@ -10,7 +10,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg
 import json
 
-# Create your views here.
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
@@ -23,9 +22,9 @@ def get_movie_details(movie):
         'description': movie.description,
         'release_date': movie.release_date,
         'duration': movie.duration,
-        'director': movie.director,
-        'actors': movie.actors,
-        'rating': movie.rating
+        'rating': movie.rating,
+        'image': movie.image.url if movie.image else None,
+        'location': movie.location
     }
 
 def get_movie_list():
@@ -59,8 +58,9 @@ def add_movie(request):
         duration = data.get('duration')
         release_date = data.get('release_date')
         description = data.get('description')
-        director = data.get('director')
-        actors = data.get('actors')
+        rating = data.get('rating')
+        location = data.get('location')
+        image = request.FILES.get('image')
         if title is None or genre is None or duration is None or release_date is None or description is None:
             return JsonResponse({'error': 'Missing required fields'}, status=400)
         movie = Movie.objects.create(
@@ -69,8 +69,9 @@ def add_movie(request):
             duration=duration,
             release_date=release_date,
             description=description,
-            director=director,
-            actors=actors
+            rating=rating,
+            image=image,
+            location=location
         )
         return JsonResponse({'movie_id': movie.movie_id})
     except json.JSONDecodeError:
