@@ -1,38 +1,44 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from .models import Showtime
-from MovieApp.models import Movie
-from django.contrib.auth.decorators import login_required, user_passes_test
+from .serializers import ShowtimeSerializer
+from movies.models import Movie
+from django.shortcuts import get_object_or_404
 
-def is_admin(user):
-    return user.is_authenticated and user.is_staff  # Check if user is admin
+class ShowtimeViewSet(viewsets.ModelViewSet):
+    queryset = Showtime.objects.all().order_by('-show_date', '-show_time')
+    serializer_class = ShowtimeSerializer
 
-def showtime_list(request, movie_id):
-    movie = get_object_or_404(Movie, id=movie_id)
-    showtimes = Showtime.objects.filter(movie=movie)
-    return render(request, 'ShowtimeApp/showtime_list.html', {'movie': movie, 'showtimes': showtimes})
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        showtime = serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(ShowtimeSerializer(showtime).data, status=status.HTTP_201_CREATED, headers=headers)
 
-@user_passes_test(is_admin)
-def create_showtime(request, movie_id):
-    movie = get_object_or_404(Movie, id=movie_id)
-    if request.method == 'POST':
-        theater_location = request.POST.get('theater_location')
-        show_date = request.POST.get('show_date')
-        show_time = request.POST.get('show_time')
-        ticket_price = request.POST.get('ticket_price')
-        Showtime.objects.create(
-            movie=movie,
-            theater_location=theater_location,
-            show_date=show_date,
-            show_time=show_time,
-            ticket_price=ticket_price
-        )
-        return redirect('showtime_list', movie_id=movie.id)
-    return render(request, 'ShowtimeApp/create_showtime.html', {'movie': movie})
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        showtime = serializer.save()
+        return Response(ShowtimeSerializer(showtime).data)
 
-@user_passes_test(is_admin)
-def delete_showtime(request, showtime_id):
-    showtime = get_object_or_404(Showtime, id=showtime_id)
-    movie_id = showtime.movie.id
-    showtime.delete()
-    return redirect('showtime_list', movie_id=movie_id)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(detail=False, methods=['get'], url_path='movie/(?P<movie_id>[^/.]+)')
+    def showtimes_by_movie(self, request, movie_id=None):
+        movie = get_object_or_404(Movie, pk=movie_id)
+        showtimes = Showtime.objects.filter(movie=movie).order_by('-show_date', '-show_time')
+        serializer = self.get_serializer(showtimes, many=True)
+        return Response({'showtimes': serializer.data}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='theater/(?P<theater_location>[^/.]+)')
+    def showtimes_by_theater(self, request, theater_location=None):
+        showtimes = Showtime.objects.filter(theater_location__icontains=theater_location).order_by('-show_date', '-show_time')
+        serializer = self.get_serializer(showtimes, many=True)
+        return Response({'showtimes': serializer.data}, status=status.HTTP_200_OK)
