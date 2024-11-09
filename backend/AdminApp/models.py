@@ -1,9 +1,9 @@
 from django.db import models
 
 # Create your models here.
-class Admin_log(models.Model):
-    log_id = models.IntegerField(max_length=10, primary_key=True)
-    admin_id = models.IntegerField(max_length=10)
+class AdminLog(models.Model):
+    log_id = models.IntegerField(primary_key=True)
+    admin_id = models.IntegerField()
     action = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
 
