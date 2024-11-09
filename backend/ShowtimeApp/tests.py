@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from movies.models import Movie
+from MovieApp.models import Movie
 from .models import Showtime
 
 class ShowtimeTests(APITestCase):

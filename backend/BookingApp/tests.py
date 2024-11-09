@@ -1,12 +1,12 @@
 from django.test import TestCase
 from django.urls import reverse
-from rest_framework import status
-from rest_framework.test import APITestCase
-from users.models import User
-from showtimes.models import Showtime, Movie
+from django.contrib.auth import get_user_model
+from ShowtimeApp.models import Showtime, Movie
 from .models import Booking
 
-class BookingTests(APITestCase):
+User = get_user_model()
+
+class BookingTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             email='testuser@example.com',
@@ -29,20 +29,25 @@ class BookingTests(APITestCase):
             theater_location='Test Theater',
             show_date='2024-05-01',
             show_time='18:00',
-            ticket_price=10.00
+            ticket_price='10.00',
+            available_seats=100
         )
-        self.booking_data = {
-            'user': self.user.id,
+        self.client.login(email='testuser@example.com', password='testpassword')
+
+    def test_create_booking(self):
+        url = reverse('booking-create')
+        data = {
             'showtime': self.showtime.id,
             'ticket_count': 2
         }
-
-    def test_create_booking(self):
-        url = reverse('booking-list')
-        response = self.client.post(url, self.booking_data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        response = self.client.post(url, data)
+        self.assertRedirects(response, reverse('booking-list'))
         self.assertEqual(Booking.objects.count(), 1)
-        self.assertEqual(Booking.objects.get().ticket_count, 2)
+        booking = Booking.objects.first()
+        self.assertEqual(booking.ticket_count, 2)
+        self.assertEqual(booking.total_price, 20.00)
+        self.showtime.refresh_from_db()
+        self.assertEqual(self.showtime.available_seats, 98)
 
     def test_cancel_booking(self):
         booking = Booking.objects.create(
@@ -51,31 +56,48 @@ class BookingTests(APITestCase):
             ticket_count=2,
             total_price=20.00
         )
-        url = reverse('booking-cancel-booking', args=[booking.booking_id])
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.showtime.available_seats -= 2
+        self.showtime.save()
+
+        url = reverse('booking-cancel', args=[booking.booking_id])
+        response = self.client.post(url)
+        self.assertRedirects(response, reverse('booking-list'))
+        self.assertEqual(Booking.objects.count(), 0)
+        self.showtime.refresh_from_db()
+        self.assertEqual(self.showtime.available_seats, 100)
+
+    def test_booking_list_view(self):
+        Booking.objects.create(
+            user=self.user,
+            showtime=self.showtime,
+            ticket_count=2,
+            total_price=20.00
+        )
+        url = reverse('booking-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Test Movie')
+        self.assertContains(response, 'Test Theater')
+        self.assertContains(response, '2 tickets')
+
+    def test_booking_form_invalid_ticket_count(self):
+        url = reverse('booking-create')
+        data = {
+            'showtime': self.showtime.id,
+            'ticket_count': 0  # Invalid ticket count
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)  # Form re-rendered
+        self.assertFormError(response, 'form', 'ticket_count', 'At least one ticket must be booked.')
         self.assertEqual(Booking.objects.count(), 0)
 
-    def test_get_bookings_by_user(self):
-        Booking.objects.create(
-            user=self.user,
-            showtime=self.showtime,
-            ticket_count=2,
-            total_price=20.00
-        )
-        url = reverse('booking-bookings-by-user', args=[self.user.id])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['bookings']), 1)
-
-    def test_get_bookings_by_showtime(self):
-        Booking.objects.create(
-            user=self.user,
-            showtime=self.showtime,
-            ticket_count=2,
-            total_price=20.00
-        )
-        url = reverse('booking-bookings-by-showtime', args=[self.showtime.id])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data['bookings']), 1)
+    def test_booking_form_insufficient_seats(self):
+        url = reverse('booking-create')
+        data = {
+            'showtime': self.showtime.id,
+            'ticket_count': 200  # Exceeds available seats
+        }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 200)  # Form re-rendered
+        self.assertFormError(response, 'form', 'showtime', 'Not enough available seats.')
+        self.assertEqual(Booking.objects.count(), 0)
