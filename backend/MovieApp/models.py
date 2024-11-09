@@ -10,6 +10,8 @@ class Movie(models.Model):
     rating = models.FloatField()                               # Average rating out of 5
     image = models.ImageField(upload_to='movies/', null=True, blank=True)  # Movie image
     location = models.CharField(max_length=255, null=True, blank=True)     # Movie location
+    director = models.CharField(max_length=225)
+    imdb_rating = models.DecimalField(max_digits=3, decimal_places=1)
 
     def add_movie(cls, title, genre, duration, release_date, description, image=None, location=None): # Returns movie_id
         try:
