@@ -1,17 +1,17 @@
 from django.db import models
+from django.core.validators import MaxValueValidator
 
 class Movie(models.Model):
-    movie_id = models.IntegerField(primary_key=True)           # Primary key movie id
-    title = models.CharField(max_length=255)                   # Movie title       
-    genre = models.CharField(max_length=100)                   # Movie genre  
-    duration = models.IntegerField()                           # Movie duration in minutes
-    release_date = models.CharField(max_length=100)            # Movie release date
-    description = models.TextField()                           # Movie description
-    rating = models.FloatField()                               # Average rating out of 5
+    movie_id = models.IntegerField(primary_key=True)                       # Primary key movie id
+    title = models.CharField(max_length=255)                               # Movie title       
+    genre = models.CharField(max_length=100)                               # Movie genre  
+    duration = models.IntegerField()                                       # Movie duration in minutes
+    release_date = models.DateField(max_length=100)                        # Movie release date
+    description = models.TextField()                                       # Movie description
     image = models.ImageField(upload_to='movies/', null=True, blank=True)  # Movie image
     location = models.CharField(max_length=255, null=True, blank=True)     # Movie location
     director = models.CharField(max_length=225)
-    imdb_rating = models.DecimalField(max_digits=3, decimal_places=1)
+    imdb_rating = models.DecimalField(max_digits=2, decimal_places=1,validators=[MaxValueValidator(5.0)])
 
     def add_movie(cls, title, genre, duration, release_date, description, image=None, location=None): # Returns movie_id
         try:

@@ -9,10 +9,11 @@ class Review(models.Model):
     review_text = models.TextField(blank=True)                      # Optional review text
     created_at = models.DateTimeField(auto_now_add=True)            # Timestamp for when the review was created
 
+    @classmethod
     def add_review(cls, user_id, movie_id, rating, review_text):
         try:
-            user = User.objects.get(user_id=user_id)
-            movie = Movie.objects.get(movie_id=movie_id)
+            user = User.objects.get(id=user_id)
+            movie = Movie.objects.get(id=movie_id)
             review = cls.objects.create(
                 user=user,
                 movie=movie,
@@ -20,12 +21,14 @@ class Review(models.Model):
                 review_text=review_text
             )
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Error creating review: {e}")
             return False
     
+    @classmethod
     def update_review(cls, review_id, **kwargs):
         try:
-            review = cls.objects.get(review_id=review_id)
+            review = cls.objects.get(id=review_id)
             for key, value in kwargs.items():
                 setattr(review, key, value)
             review.save()
@@ -33,6 +36,7 @@ class Review(models.Model):
         except cls.DoesNotExist:
             return False
         
+    @classmethod
     def get_reviews_by_movie(cls, movie_id):
         try:
             reviews = cls.objects.filter(movie_id=movie_id)
