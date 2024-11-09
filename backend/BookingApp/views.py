@@ -1,26 +1,42 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.decorators import action
 from .models import Booking
-from ShowtimeApp.models import Showtime
-from UserApp.models import User
-from django.contrib.auth.decorators import login_required
+from .serializers import BookingSerializer
+from django.shortcuts import get_object_or_404
+from showtimes.models import Showtime
+from users.models import User
 
-@login_required
-def create_booking(request, showtime_id):
-    showtime = get_object_or_404(Showtime, id=showtime_id)
-    if request.method == 'POST':
-        ticket_count = int(request.POST.get('ticket_count', 1))
-        total_price = ticket_count * showtime.ticket_price
-        booking = Booking.objects.create(
-            user=request.user,
-            showtime=showtime,
-            ticket_count=ticket_count,
-            total_price=total_price
-        )
-        return redirect('booking_detail', booking_id=booking.id)
-    return render(request, 'BookingApp/create_booking.html', {'showtime': showtime})
+class BookingViewSet(viewsets.ModelViewSet):
+    queryset = Booking.objects.all().order_by('-created_at')
+    serializer_class = BookingSerializer
 
-@login_required
-def booking_detail(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id)
-    return render(request, 'BookingApp/booking_detail.html', {'booking': booking})
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        booking = serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(BookingSerializer(booking).data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @action(detail=True, methods=['delete'], url_path='cancel')
+    def cancel_booking(self, request, pk=None):
+        booking = self.get_object()
+        success = Booking.cancel_booking(booking.booking_id)
+        if success:
+            return Response({'success': True, 'message': 'Booking canceled successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'success': False, 'message': 'Failed to cancel booking.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['get'], url_path='user/(?P<user_id>[^/.]+)')
+    def bookings_by_user(self, request, user_id=None):
+        user = get_object_or_404(User, pk=user_id)
+        bookings = Booking.objects.filter(user=user).order_by('-created_at')
+        serializer = self.get_serializer(bookings, many=True)
+        return Response({'bookings': serializer.data}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], url_path='showtime/(?P<showtime_id>[^/.]+)')
+    def bookings_by_showtime(self, request, showtime_id=None):
+        showtime = get_object_or_404(Showtime, pk=showtime_id)
+        bookings = Booking.objects.filter(showtime=showtime).order_by('-created_at')
+        serializer = self.get_serializer(bookings, many=True)
+        return Response({'bookings': serializer.data}, status=status.HTTP_200_OK)
