@@ -1,8 +1,10 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import ShowtimeViewSet
+
+router = DefaultRouter()
+router.register(r'showtimes', ShowtimeViewSet, basename='showtime')
 
 urlpatterns = [
-    path('<int:movie_id>/list/', views.showtime_list, name='showtime_list'),  # List showtimes for a movie
-    path('<int:movie_id>/create/', views.create_showtime, name='create_showtime'),  # Create a new showtime
-    path('delete/<int:showtime_id>/', views.delete_showtime, name='delete_showtime'),  # Delete a showtime
+    path('', include(router.urls)),
 ]

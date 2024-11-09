@@ -1,6 +1,5 @@
 from django.apps import AppConfig
 
-
-class ShowtimeappConfig(AppConfig):
+class ShowtimesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'ShowtimeApp'
+    name = 'showtimes'
