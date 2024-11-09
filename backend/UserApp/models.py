@@ -8,13 +8,18 @@ class User(models.Model):
     password = models.CharField(max_length=100)
     address = models.CharField(max_length=100)
     phone = models.CharField(max_length=10)
-    creditCardNumber = models.CharField(max_length=16, null=True, blank=True)
-    expirationDate = models.DateField(null=True, blank=True)
-    cvv = models.CharField(max_length=3, null=True, blank=True)
-    billingAddress = models.CharField(max_length=100, default="Example Street", null=True, blank=True)
-    isCreditCard = models.BooleanField(default=False)
-    isPaypal = models.BooleanField(default=False)
-    is_admin = models.BooleanField(default=False)
+    has_credit_card = models.BooleanField(default=False)
+    credit_card_number = models.CharField(max_length=16, null=True, blank=True)
+    credit_card_expiration = models.DateField(null=True, blank=True)
+    credit_card_cvv = models.CharField(max_length=3, null=True, blank=True)
+    credit_card_billing = models.CharField(max_length=100, null=True, blank=True)
+    has_debit_card = models.BooleanField(default=False)
+    debit_card_number = models.CharField(max_length=16, null=True, blank=True)
+    debit_card_expiration = models.DateField(null=True, blank=True)
+    debit_card_cvv = models.CharField(max_length=3, null=True, blank=True)
+    debit_card_billing = models.CharField(max_length=100, null=True, blank=True)
+    has_paypal = models.BooleanField(default=False)
+    paypal_email = models.EmailField(null=True, blank=True)
 
     def __str__(self):
         return f"User {self.user_id}: {self.name}"
@@ -36,15 +41,16 @@ class User(models.Model):
             if payment_info:
                 if payment_info.get('type') == 'credit_card':
                     user_data.update({
-                        'isCreditCard': True,
-                        'creditCardNumber': payment_info.get('card_number'),
-                        'expirationDate': payment_info.get('expiration_date'),
-                        'cvv': payment_info.get('cvv'),
-                        'billingAddress': payment_info.get('billing_address')
+                        'has_credit_card': True,
+                        'credit_card_number': payment_info.get('card_number'),
+                        'credit_card_expiration': payment_info.get('expiration_date'),
+                        'credit_card_cvv': payment_info.get('cvv'),
+                        'credit_card_billing': payment_info.get('billing_address')
                     })
                 elif payment_info.get('type') == 'paypal':
                     user_data.update({
-                        'isPaypal': True
+                        'has_paypal': True,
+                        'paypal_email': payment_info.get('email')
                     })
             
             user = cls.objects.create(**user_data)
@@ -68,18 +74,39 @@ class User(models.Model):
                 'email': user.email,
                 'address': user.address,
                 'phone': user.phone,
-                'is_admin': user.is_admin,
                 'payment_methods': {
-                    'credit_card': user.isCreditCard,
-                    'paypal': user.isPaypal
+                    'credit_card': {
+                        'enabled': user.has_credit_card,
+                        'details': None
+                    },
+                    'debit_card': {
+                        'enabled': user.has_debit_card,
+                        'details': None
+                    },
+                    'paypal': {
+                        'enabled': user.has_paypal,
+                        'details': None
+                    }
                 }
             }
             
-            if user.isCreditCard:
-                details['credit_card'] = {
-                    'card_number': '*' * 12 + user.creditCardNumber[-4:],  # Only show last 4 digits
-                    'expiration_date': user.expirationDate,
-                    'billing_address': user.billingAddress
+            if user.has_credit_card:
+                details['payment_methods']['credit_card']['details'] = {
+                    'card_number': '*' * 12 + user.credit_card_number[-4:],
+                    'expiration_date': user.credit_card_expiration,
+                    'billing_address': user.credit_card_billing
+                }
+            
+            if user.has_debit_card:
+                details['payment_methods']['debit_card']['details'] = {
+                    'card_number': '*' * 12 + user.debit_card_number[-4:],
+                    'expiration_date': user.debit_card_expiration,
+                    'billing_address': user.debit_card_billing
+                }
+            
+            if user.has_paypal:
+                details['payment_methods']['paypal']['details'] = {
+                    'email': user.paypal_email
                 }
             
             return details

@@ -24,8 +24,8 @@ class RegisterUserView(View):
             payment_info = None
             
             if payment_type:
-                if payment_type == 'credit_card':
-                    # Validate credit card fields
+                if payment_type in ['credit_card', 'debit_card']:
+                    # Validate card fields
                     card_number = data.get('card_number')
                     expiration_date = data.get('expiration_date')
                     cvv = data.get('cvv')
@@ -34,7 +34,7 @@ class RegisterUserView(View):
                     if not all([card_number, expiration_date, cvv, billing_address]):
                         return JsonResponse({
                             'success': False,
-                            'error': 'Missing credit card information'
+                            'error': f'Missing {payment_type} information'
                         }, status=400)
                     
                     if not (len(card_number) == 16 and len(cvv) == 3):
@@ -44,15 +44,23 @@ class RegisterUserView(View):
                         }, status=400)
                     
                     payment_info = {
-                        'type': 'credit_card',
+                        'type': payment_type,
                         'card_number': card_number,
                         'expiration_date': expiration_date,
                         'cvv': cvv,
                         'billing_address': billing_address
                     }
                 elif payment_type == 'paypal':
+                    paypal_email = data.get('paypal_email')
+                    if not paypal_email:
+                        return JsonResponse({
+                            'success': False,
+                            'error': 'Missing PayPal email'
+                        }, status=400)
+                    
                     payment_info = {
-                        'type': 'paypal'
+                        'type': 'paypal',
+                        'paypal_email': paypal_email
                     }
             
             # Validate required fields
