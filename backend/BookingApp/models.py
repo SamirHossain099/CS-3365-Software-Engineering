@@ -9,9 +9,15 @@ class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookings')  # Link to the user who made the booking
     showtime = models.ForeignKey(Showtime, on_delete=models.CASCADE, related_name='bookings')  # Link to the showtime
     ticket_count = models.PositiveIntegerField()
-    total_price = models.DecimalField(max_digits=10, decimal_places=2, editable=False, default=0.00)  # Set a default value
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)  # Removed editable=False
     barcode = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        # Calculate total price before saving if not already set
+        if not self.total_price:
+            self.total_price = self.ticket_count * self.showtime.ticket_price
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Booking {self.booking_id} by {self.user.email}"
