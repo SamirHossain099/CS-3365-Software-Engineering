@@ -44,7 +44,7 @@ class AdminLogCreateView(View):
                 }, status=400) # return 400 bad request if validation fails
             
             # attempt to create the log entry using model method
-            success = Admin_log.log_action(admin_id, action)
+            success = AdminLog.log_action(admin_id, action)
 
             if success:
                 return JsonResponse({
@@ -64,6 +64,6 @@ class AdminLogCreateView(View):
 
 class AdminLogsByAdminView(View):
     def get(self, request, admin_id, *args, **kwargs):
-        logs = Admin_log.get_logs_by_admin(admin_id)
+        logs = AdminLog.get_logs_by_admin(admin_id)
         data = list(logs.values('log_id', 'admin_id', 'action', 'timestamp'))
         return JsonResponse({'logs': data}, safe=False)
