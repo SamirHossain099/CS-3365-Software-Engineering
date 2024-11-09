@@ -1,8 +1,9 @@
+# BookingApp/urls.py
 from django.urls import path
-from .views import BookingListView, BookingCreateView, BookingCancelView
+from . import views
 
 urlpatterns = [
-    path('', BookingListView.as_view(), name='booking-list'),
-    path('create/', BookingCreateView.as_view(), name='booking-create'),
-    path('cancel/<int:booking_id>/', BookingCancelView.as_view(), name='booking-cancel'),
+    path('create/', views.create_booking, name='create_booking'),  # Create a booking
+    path('cancel/<int:booking_id>/', views.cancel_booking, name='cancel_booking'),  # Cancel a booking
+    path('details/<int:booking_id>/', views.get_booking_details, name='get_booking_details'),  # Get booking details
 ]
