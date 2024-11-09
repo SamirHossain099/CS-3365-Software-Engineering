@@ -1,14 +1,13 @@
 from django.db import models
+from UserApp.models import User  # Importing User model from UserApp
+from MovieApp.models import Movie  # Importing Movie model from MovieApp
 
-# Create your models here.
 class Review(models.Model):
-    review_id = models.IntegerField(primary_key=True)
-    user_id = models.IntegerField(max_length=10)
-    movie_id = models.IntegerField(max_length=10)
-    rating = models.FloatField()
-    review = models.TextField(max_length=1000)
-    review_date = models.DateField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Link to the user who wrote the review
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE)  # Link to the movie being reviewed
+    rating = models.PositiveSmallIntegerField()  # Rating out of 5, e.g., 1 to 5 stars
+    review_text = models.TextField(blank=True)  # Optional review text
+    created_at = models.DateTimeField(auto_now_add=True)  # Timestamp for when the review was created
 
-    def add_review(user_id, movie_id, rating, review): int # Returns review_id
-    def get_reviews_by_movie(movie_id): list
-    def update_movie_review(review_id, **kwargs): bool
+    def __str__(self):
+        return f"Review by {self.user} for {self.movie} - {self.rating} stars"

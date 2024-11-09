@@ -10,6 +10,9 @@ class User(models.Model):
     phone = models.CharField(max_length=10)
     is_admin = models.BooleanField(default=False)
 
+    def __str__(self):
+        return f"User {self.user_id}: {self.name}"
+
     def register_user(cls, name, email, password, address, phone_number):
         try:
             if cls.objects.filter(email=email).exists():
