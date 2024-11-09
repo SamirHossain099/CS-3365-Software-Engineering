@@ -1,16 +1,17 @@
 from django.db import models
 
-# Create your models here.
 class Movie(models.Model):
-    movie_id = models.IntegerField(primary_key=True) # Primary key movie id
-    title = models.CharField(max_length=255)                         # Movie title       
-    genre = models.CharField(max_length=100)                         # Movie genre  
-    duration = models.IntegerField()                                 # Movie duration in minutes
-    release_date = models.CharField(max_length=100)                  # Movie release date
-    description = models.TextField()                                 # Movie description
-    rating = models.FloatField()                                     # Average rating out of 5
+    movie_id = models.IntegerField(primary_key=True)           # Primary key movie id
+    title = models.CharField(max_length=255)                   # Movie title       
+    genre = models.CharField(max_length=100)                   # Movie genre  
+    duration = models.IntegerField()                           # Movie duration in minutes
+    release_date = models.CharField(max_length=100)            # Movie release date
+    description = models.TextField()                           # Movie description
+    rating = models.FloatField()                               # Average rating out of 5
+    image = models.ImageField(upload_to='movies/', null=True, blank=True)  # Movie image
+    location = models.CharField(max_length=255, null=True, blank=True)     # Movie location
 
-    def add_movie(cls, title, genre, duration, release_date, description): # Returns movie_id
+    def add_movie(cls, title, genre, duration, release_date, description, image=None, location=None): # Returns movie_id
         try:
             if cls.objects.filter(title=title).exists():
                 return False
@@ -20,7 +21,9 @@ class Movie(models.Model):
                 genre=genre,
                 duration=duration,
                 release_date=release_date,
-                description=description
+                description=description,
+                image=image,
+                location=location
             )
             return True
         except Exception:
