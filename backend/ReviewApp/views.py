@@ -32,3 +32,4 @@ def delete_review(request, review_id):
     movie_id = review.movie.id
     review.delete()
     return redirect('movie_reviews', movie_id=movie_id)
+

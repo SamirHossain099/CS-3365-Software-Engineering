@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Movie(models.Model):
-    movie_id = models.IntegerField(max_length= 10, primary_key=True) # Primary key movie id
+    movie_id = models.IntegerField(primary_key=True) # Primary key movie id
     title = models.CharField(max_length=255)                         # Movie title       
     genre = models.CharField(max_length=100)                         # Movie genre  
     duration = models.IntegerField()                                 # Movie duration in minutes

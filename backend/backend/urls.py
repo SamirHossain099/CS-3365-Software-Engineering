@@ -24,4 +24,5 @@ urlpatterns = [
     path('reviews/', include('ReviewApp.urls')),      # Include ReviewApp URLs
     path('users/', include('UserApp.urls')),          # Include UserApp URLs
     path('admin/', include('AdminApp.urls')),
+    path('movies/', include('MovieApp.urls')),        # Include MovieApp URLs
 ]
