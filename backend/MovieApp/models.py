@@ -13,6 +13,9 @@ class Movie(models.Model):
     director = models.CharField(max_length=225)
     imdb_rating = models.DecimalField(max_digits=2, decimal_places=1,validators=[MaxValueValidator(5.0)])
 
+    def __str__(self):
+        return self.title
+
     def add_movie(cls, title, genre, duration, release_date, description, image=None, location=None): # Returns movie_id
         try:
             if cls.objects.filter(title=title).exists():
