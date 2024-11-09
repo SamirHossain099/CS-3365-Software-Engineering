@@ -12,12 +12,48 @@ class RegisterUserView(View):
             # Parse the incoming JSON data
             data = json.loads(request.body)
             
-            # Extract required fields
+            # Extract basic fields
             name = data.get('name')
             email = data.get('email')
-            password = data.get('password')  # Note: Should be hashed in production
+            password = data.get('password')
             address = data.get('address')
             phone = data.get('phone')
+            
+            # Extract payment information
+            payment_type = data.get('payment_type')
+            payment_info = None
+            
+            if payment_type:
+                if payment_type == 'credit_card':
+                    # Validate credit card fields
+                    card_number = data.get('card_number')
+                    expiration_date = data.get('expiration_date')
+                    cvv = data.get('cvv')
+                    billing_address = data.get('billing_address')
+                    
+                    if not all([card_number, expiration_date, cvv, billing_address]):
+                        return JsonResponse({
+                            'success': False,
+                            'error': 'Missing credit card information'
+                        }, status=400)
+                    
+                    if not (len(card_number) == 16 and len(cvv) == 3):
+                        return JsonResponse({
+                            'success': False,
+                            'error': 'Invalid card number or CVV format'
+                        }, status=400)
+                    
+                    payment_info = {
+                        'type': 'credit_card',
+                        'card_number': card_number,
+                        'expiration_date': expiration_date,
+                        'cvv': cvv,
+                        'billing_address': billing_address
+                    }
+                elif payment_type == 'paypal':
+                    payment_info = {
+                        'type': 'paypal'
+                    }
             
             # Validate required fields
             if not all([name, email, password, address, phone]):
@@ -33,13 +69,14 @@ class RegisterUserView(View):
                     'error': 'Phone number must be 10 digits'
                 }, status=400)
             
-            # Attempt to register user
+            # Attempt to register user with payment info
             success = User.register_user(
                 name=name,
                 email=email,
                 password=password,
                 address=address,
-                phone_number=phone
+                phone_number=phone,
+                payment_info=payment_info
             )
             
             if success:
