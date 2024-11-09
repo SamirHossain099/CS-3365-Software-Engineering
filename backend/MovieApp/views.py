@@ -28,19 +28,6 @@ def get_movie_details(movie):
         'rating': movie.rating
     }
 
-def get_review_details(review):
-    return {
-        'review_id': review.review_id,
-        'user': review.user.username,
-        'rating': review.rating,
-        'review_text': review.review_text,
-        'created_at': review.created_at
-    }
-
-def get_movie_reviews(movie):
-    reviews = Review.objects.filter(movie=movie).order_by('-created_at')
-    return [get_review_details(review) for review in reviews]
-
 def get_movie_list():
     movies = Movie.objects.all()
     return [get_movie_details(movie) for movie in movies]
@@ -62,7 +49,7 @@ def get_movie_list_api(request):
     return JsonResponse({'movies': get_movie_list()})
 
 @csrf_exempt
-def add_movie_api(request):
+def add_movie(request):
     if request.method != 'POST':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     try:
@@ -92,7 +79,7 @@ def add_movie_api(request):
         return JsonResponse({'error': str(e)}, status=500)
     
 @csrf_exempt
-def update_movie_api(request, movie_id):
+def update_movie(request, movie_id):
     if request.method != 'PUT':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     try:
@@ -110,7 +97,7 @@ def update_movie_api(request, movie_id):
         return JsonResponse({'error': str(e)}, status=500)
     
 @csrf_exempt
-def delete_movie_api(request, movie_id):
+def delete_movie(request, movie_id):
     if request.method != 'DELETE':
         return JsonResponse({'error': 'Invalid request method'}, status=405)
     try:
