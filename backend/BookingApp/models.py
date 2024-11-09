@@ -1,9 +1,7 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+from UserApp.models import User
 from ShowtimeApp.models import Showtime
 import uuid
-
-User = get_user_model()
 
 class Booking(models.Model):
     booking_id = models.AutoField(primary_key=True)
