@@ -47,6 +47,26 @@ def get_movie_reviews_api(request, movie_id):
 def get_movie_list_api(request):
     return JsonResponse({'movies': get_movie_list()})
 
+def update_rating(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
+    try:
+        data = json.loads(request.body)
+        movie_id = data.get('movie_id')
+        new_rating = data.get('rating')
+        if movie_id is None or new_rating is None:
+            return JsonResponse({'error': 'Missing required fields'}, status=400)
+        movie = Movie.objects.get(movie_id=movie_id)
+        movie.rating = new_rating
+        movie.save()
+        return JsonResponse({'success': True})
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON'}, status=400)
+    except ObjectDoesNotExist:
+        return JsonResponse({'error': 'Movie not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
 @csrf_exempt
 def add_movie(request):
     if request.method != 'POST':
