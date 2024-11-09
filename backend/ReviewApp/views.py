@@ -3,7 +3,6 @@ from .models import Review
 from MovieApp.models import Movie
 from django.contrib.auth.decorators import login_required, user_passes_test
 
-
 def is_admin(user):
     return user.is_authenticated and user.is_staff  # Checks if the user is an admin
 
