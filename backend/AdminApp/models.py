@@ -7,6 +7,9 @@ class Admin_log(models.Model):
     action = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Admin_log {self.log_id}: {self.admin_id} - {self.action}"
+
     def log_action(cls, admin_id, action):
         try:
             cls.objects.create(admin_id=admin_id, action=action)
