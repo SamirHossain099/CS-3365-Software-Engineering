@@ -5,8 +5,46 @@
 **/
 
 import "./movie.css";
+import { useNavigate } from "react-router-dom";
 
 function Movie() {
+    const navigate = useNavigate();
+    const handlePurchase = async (movieId) => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        if (!user) {
+            navigate('/');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/purchase/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userId: user.id,
+                    movieId,
+                    date,
+                    time,
+                    theater,
+                    ticketCount,
+                    price,
+                })
+            });
+
+            if (response.ok) {
+                alert('Purchase successful');
+            } else {
+                const error = await response.json();
+                alert(error.error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('An error occurred while processing your purchase.');
+        }
+    };
+
     return (
         <div>
             <h1>Movie Name</h1>
