@@ -4,12 +4,12 @@ from django.views import View
 from django.http import JsonResponse                      # For returning JSON responses
 from django.views.decorators.csrf import csrf_exempt      # For handling CSRF exceptions
 from django.utils.decorators import method_decorator
-from .models import Admin_log
+from .models import AdminLog
 import json
 
 # Create your views here.
 class AdminLogListView(ListView):
-    model = Admin_log
+    model = AdminLog
 
     def get(self, request, *args, **kwargs):
         logs = self.model.objects.all().order_by('-timestamp')                 # Retrieve all logs from database, ordered by timestamp
