@@ -2,13 +2,13 @@ from django.db import models
 
 # Create your models here.
 class Movie(models.Model):
-    movie_id = models.IntegerField(max_length= 10, primary_key=True)
-    title = models.CharField(max_length=255)
-    genre = models.CharField(max_length=100)
-    duration = models.IntegerField()
-    release_date = models.CharField(max_length=100)
-    description = models.TextField()
-    rating = models.FloatField()
+    movie_id = models.IntegerField(max_length= 10, primary_key=True) # Primary key movie id
+    title = models.CharField(max_length=255)                         # Movie title       
+    genre = models.CharField(max_length=100)                         # Movie genre  
+    duration = models.IntegerField()                                 # Movie duration in minutes
+    release_date = models.CharField(max_length=100)                  # Movie release date
+    description = models.TextField()                                 # Movie description
+    rating = models.FloatField()                                     # Average rating out of 5
 
     def add_movie(cls, title, genre, duration, release_date, description): # Returns movie_id
         try:
