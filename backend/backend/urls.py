@@ -23,6 +23,6 @@ urlpatterns = [
     path('showtimes/', include('ShowtimeApp.urls')),  # Include ShowtimeApp URLs
     path('reviews/', include('ReviewApp.urls')),      # Include ReviewApp URLs
     path('users/', include('UserApp.urls')),          # Include UserApp URLs
-    path('admin/', include('AdminApp.urls')),
+    path('admin/', include('AdminApp.urls')),         # Include AdminApp URLs
     path('movies/', include('MovieApp.urls')),        # Include MovieApp URLs
 ]

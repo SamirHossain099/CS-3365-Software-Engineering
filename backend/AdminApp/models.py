@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class AdminLog(models.Model):
-    log_id = models.AutoField(primary_key=True)
+    log_id = models.AutoField(primary_key=True)           # Create log 
     admin_id = models.IntegerField()
     action = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
