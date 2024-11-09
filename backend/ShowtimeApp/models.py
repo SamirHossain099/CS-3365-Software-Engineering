@@ -14,6 +14,7 @@ class Showtime(models.Model):
     def __str__(self):
         return f"{self.movie.title} at {self.theater_location} on {self.show_date} {self.show_time}"
 
+    """
     @classmethod
     def add_showtime(cls, movie, theater_location, show_date, show_time, ticket_price, available_seats=100):
         try:
@@ -69,3 +70,4 @@ class Showtime(models.Model):
             }
         except cls.DoesNotExist:
             return {}
+    """
