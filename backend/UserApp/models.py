@@ -24,6 +24,7 @@ class User(models.Model):
     def __str__(self):
         return f"User {self.user_id}: {self.name}"
 
+    """
     def register_user(cls, name, email, password, address, phone_number, payment_info=None):
         try:
             if cls.objects.filter(email=email).exists():
@@ -112,3 +113,4 @@ class User(models.Model):
             return details
         except cls.DoesNotExist:
             return None
+    """

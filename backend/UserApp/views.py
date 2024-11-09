@@ -4,6 +4,10 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from .models import User
 import json
+from django.contrib.auth.decorators import user_passes_test
+
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RegisterUserView(View):
@@ -146,3 +150,53 @@ class LoginUserView(View):
                 'success': False,
                 'error': 'Invalid JSON'
             }, status=400)
+
+@csrf_exempt
+@user_passes_test(is_admin)
+def get_all_users(request):
+    if request.method != 'GET':
+        return JsonResponse({'error': 'Method not allowed'}, status=405)
+    
+    try:
+        users = User.objects.all()
+        users_data = [{
+            'user_id': user.user_id,
+            'name': user.name,
+            'email': user.email,
+            'address': user.address,
+            'phone': user.phone,
+            'payment_methods': {
+                'credit_card': {
+                    'enabled': user.has_credit_card,
+                    'details': {
+                        'card_number': '*' * 12 + user.credit_card_number[-4:] if user.credit_card_number else None,
+                        'expiration_date': user.credit_card_expiration,
+                        'billing_address': user.credit_card_billing
+                    } if user.has_credit_card else None
+                },
+                'debit_card': {
+                    'enabled': user.has_debit_card,
+                    'details': {
+                        'card_number': '*' * 12 + user.debit_card_number[-4:] if user.debit_card_number else None,
+                        'expiration_date': user.debit_card_expiration,
+                        'billing_address': user.debit_card_billing
+                    } if user.has_debit_card else None
+                },
+                'paypal': {
+                    'enabled': user.has_paypal,
+                    'details': {
+                        'email': user.paypal_email
+                    } if user.has_paypal else None
+                }
+            }
+        } for user in users]
+        
+        return JsonResponse({
+            'success': True,
+            'users': users_data
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
