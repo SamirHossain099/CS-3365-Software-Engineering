@@ -9,6 +9,7 @@ class Review(models.Model):
     review_text = models.TextField(blank=True)                      # Optional review text
     created_at = models.DateTimeField(auto_now_add=True)            # Timestamp for when the review was created
 
+    """
     @classmethod
     def add_review(cls, user_id, movie_id, rating, review_text):
         try:
@@ -50,3 +51,4 @@ class Review(models.Model):
             } for review in reviews]
         except cls.DoesNotExist:
             return None
+    """
