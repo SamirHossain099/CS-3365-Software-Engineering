@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-from showtimes.models import Showtime
+from ShowtimeApp.models import Showtime
 import uuid
 
 User = get_user_model()

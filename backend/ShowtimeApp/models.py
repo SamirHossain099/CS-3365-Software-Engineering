@@ -1,5 +1,5 @@
 from django.db import models
-from movies.models import Movie  # Ensure you have a Movie app
+from MovieApp.models import Movie  # Ensure you have a Movie app
 import uuid
 
 class Showtime(models.Model):
