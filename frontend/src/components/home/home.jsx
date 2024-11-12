@@ -21,7 +21,7 @@ function Home() {
                 <div>
                     <h2>Theater 1</h2>
                     <div>
-                        <img></img>
+                        <img src={DefaultProfile} alt="Profile Logo" className="profile-logo"></img>
                         <p>Movie Name</p>
                     </div>
                 </div>
