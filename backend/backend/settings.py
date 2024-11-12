@@ -136,9 +136,37 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
 
-# Optional: Allow credentials
+# Add CORS_EXPOSE_HEADERS if needed
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
+
+# Allow credentials if needed
 CORS_ALLOW_CREDENTIALS = True
 
 # Add these settings near the bottom of the file
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'movies')
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = False  # Set this to False for security
+
+# Add these if needed
+CORS_ALLOW_METHODS = [
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+]

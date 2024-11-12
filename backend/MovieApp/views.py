@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Avg
 import json
+import traceback
 
 
 def is_admin(request, user):
@@ -23,6 +24,7 @@ def get_movie_details(movie):
         'release_date': movie.release_date,
         'duration': movie.duration,
         'rating': movie.imdb_rating,
+        'director': movie.director,  # Added director
         'image': movie.image.url if movie.image else None,
         'location': movie.location
     }
@@ -35,12 +37,26 @@ def get_movie(movie_id):
         return None
 
 def get_movie_reviews(request, movie_id):
-    movie = get_movie(movie_id)
-    if movie is None:
+    try:
+        movie = Movie.objects.get(movie_id=movie_id)
+        movie_details = get_movie_details(movie)
+        reviews = Review.objects.filter(movie=movie)  # Changed from movie_id to movie
+        review_list = [get_review_details(review) for review in reviews]
+        
+        print(f"Movie details: {movie_details}")
+        print(f"Reviews: {review_list}")
+        
+        return JsonResponse({
+            'movie': movie_details,
+            'reviews': review_list
+        })
+    except Movie.DoesNotExist:
+        print(f"Movie not found with ID: {movie_id}")
         return JsonResponse({'error': 'Movie not found'}, status=404)
-    reviews = Review.objects.filter(movie_id=movie_id)
-    review_list = [get_review_details(review) for review in reviews]
-    return JsonResponse({'movie': movie, 'reviews': review_list})
+    except Exception as e:
+        print(f"Error in get_movie_reviews: {str(e)}")
+        print(traceback.format_exc())
+        return JsonResponse({'error': str(e)}, status=500)
 
 def get_movie_list(request):
     movies = Movie.objects.all()
@@ -50,10 +66,11 @@ def get_movie_list(request):
 def get_review_details(review):
     return {
         'review_id': review.pk,
-        'user': review.user.username,
+        'user': review.user.email if hasattr(review.user, 'email') else str(review.user),  # Use email instead of username
         'rating': review.rating,
-        'comment': review.comment,
+        'comment': review.review_text,  # Changed from comment to review_text
         'created_at': review.created_at,
+        'review_text': review.review_text
     }
 
 @csrf_exempt

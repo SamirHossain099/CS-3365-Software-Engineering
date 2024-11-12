@@ -1,0 +1,96 @@
+.movie-details-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.movie-hero {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 40px;
+}
+
+.movie-poster {
+    width: 300px;
+    height: 450px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.movie-info {
+    flex: 1;
+}
+
+.movie-metadata {
+    margin: 20px 0;
+}
+
+.movie-metadata p {
+    margin: 10px 0;
+}
+
+.movie-description {
+    line-height: 1.6;
+}
+
+.booking-section {
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 40px;
+}
+
+.booking-section select,
+.booking-section input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.ticket-count {
+    margin: 20px 0;
+}
+
+.purchase-button {
+    width: 100%;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.purchase-button:hover {
+    background-color: #0056b3;
+}
+
+.reviews-section {
+    margin-top: 40px;
+}
+
+.review-card {
+    background-color: #f9f9f9;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.review-user {
+    font-weight: bold;
+}
+
+.review-rating {
+    color: #f39c12;
+}
+
+.review-text {
+    margin: 10px 0;
+}
+
+.review-date {
+    color: #666;
+    font-size: 0.9em;
+}

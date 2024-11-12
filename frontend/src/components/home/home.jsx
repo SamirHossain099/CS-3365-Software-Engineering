@@ -15,7 +15,7 @@ import SearchIcon from "../../search-icon.png"
 import FallbackImage from '../../moviefallback.jpg';  // Fallback image for when movie posters fail to load
 
 // Define the backend URL for media files
-const BACKEND_URL = 'http://localhost:8000/media';
+const BACKEND_URL = 'http://localhost:8000';
 
 function Home() {
     // State management for movies in each theater
@@ -45,7 +45,7 @@ function Home() {
                 throw new Error('Failed to fetch movies');
             }
             const data = await response.json();
-            console.log('First movie data:', data.movies[0]);
+            console.log('Movie data:', data.movies[0]);
             
             // Filter movies by their respective theater locations
             setTheater1Movies(data.movies.filter(movie => movie.location === 'Lubbock, TX'));
@@ -63,6 +63,38 @@ function Home() {
     const handleProfileClick = () => {
         navigate("/profile");
     }
+
+    const handleMovieClick = (movieId) => {
+        navigate(`/movie/${movieId}`);
+    }
+
+    const MovieCard = ({ movie }) => {
+        // Update the image URL construction
+        const imageUrl = movie.image ? 
+            `${BACKEND_URL}/media/${movie.image.split('/').pop()}` :  // Get just the filename
+            FallbackImage;
+        
+        console.log('Movie image URL:', imageUrl);
+        
+        return (
+            <div 
+                className="movie-card"
+                onClick={() => handleMovieClick(movie.movie_id)}
+                style={{ cursor: 'pointer' }}
+            >
+                <img 
+                    src={imageUrl}
+                    alt={movie.title}
+                    onError={(e) => {
+                        console.log('Image load error for:', movie.title);
+                        e.target.onerror = null;
+                        e.target.src = FallbackImage;
+                    }}
+                />
+                <p>{movie.title}</p>
+            </div>
+        );
+    };
 
     return (
         <div>
@@ -111,120 +143,60 @@ function Home() {
                 */}
                 {/* Theater 1 section */}
                 <div className="theater-section">
-                    <h2>Theater 1</h2>
+                    <h2>Lubbock, TX</h2>
                     <div className="movies-container">
                         {theater1Movies.map(movie => (
-                            <div key={movie.movie_id} className="movie-card">
-                                <img 
-                                    src={movie.image || FallbackImage} 
-                                    alt={movie.title} 
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = FallbackImage;
-                                    }}
-                                />
-                                <p>{movie.title}</p>
-                            </div>
+                            <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
                 </div>
 
                 {/* Theater 2 section */}
                 <div className="theater-section">
-                    <h2>Theater 2</h2>
+                    <h2>Amarillo, TX</h2>
                     <div className="movies-container">
                         {theater2Movies.map(movie => (
-                            <div key={movie.movie_id} className="movie-card">
-                                <img 
-                                    src={movie.image || FallbackImage} 
-                                    alt={movie.title}
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = FallbackImage;
-                                    }}
-                                />
-                                <p>{movie.title}</p>
-                            </div>
+                            <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
                 </div>
 
                 {/* Theater 3 section */}
                 <div className="theater-section">
-                    <h2>Theater 3</h2>
+                    <h2>Levelland, TX</h2>
                     <div className="movies-container">
                         {theater3Movies.map(movie => (
-                            <div key={movie.movie_id} className="movie-card">
-                                <img 
-                                    src={movie.image || FallbackImage} 
-                                    alt={movie.title}
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = FallbackImage;
-                                    }}
-                                />
-                                <p>{movie.title}</p>
-                            </div>
+                            <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
                 </div>
 
                 {/* Theater 4 section */}
                 <div className="theater-section">
-                    <h2>Theater 4</h2>
+                    <h2>Plainview, TX</h2>
                     <div className="movies-container">
                         {theater4Movies.map(movie => (
-                            <div key={movie.movie_id} className="movie-card">
-                                <img 
-                                    src={movie.image || FallbackImage} 
-                                    alt={movie.title}
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = FallbackImage;
-                                    }}
-                                />
-                                <p>{movie.title}</p>
-                            </div>
+                            <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
                 </div>
 
                 {/* Theater 5 section */}
                 <div className="theater-section">
-                    <h2>Theater 5</h2>
+                    <h2>Snyder, TX</h2>
                     <div className="movies-container">
                         {theater5Movies.map(movie => (
-                            <div key={movie.movie_id} className="movie-card">
-                                <img 
-                                    src={movie.image || FallbackImage} 
-                                    alt={movie.title}
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = FallbackImage;
-                                    }}
-                                />
-                                <p>{movie.title}</p>
-                            </div>
+                            <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
                 </div>
 
                 {/* Theater 6 section */}
                 <div className="theater-section">
-                    <h2>Theater 6</h2>
+                    <h2>Abiliene, TX</h2>
                     <div className="movies-container">
                         {theater6Movies.map(movie => (
-                            <div key={movie.movie_id} className="movie-card">
-                                <img 
-                                    src={movie.image || FallbackImage} 
-                                    alt={movie.title}
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = FallbackImage;
-                                    }}
-                                />
-                                <p>{movie.title}</p>
-                            </div>
+                            <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
                 </div>

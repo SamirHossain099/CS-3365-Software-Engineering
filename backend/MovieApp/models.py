@@ -8,7 +8,7 @@ class Movie(models.Model):
     duration = models.IntegerField()
     release_date = models.DateField()
     description = models.TextField()
-    image = models.ImageField(upload_to='movies/', null=True, blank=True)
+    image = models.ImageField(null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     director = models.CharField(max_length=225, null=True, blank=True)
     imdb_rating = models.DecimalField(

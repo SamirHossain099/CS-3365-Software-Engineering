@@ -21,10 +21,10 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('booking/', include('BookingApp.urls')),     # Include BookingApp URLs
-    path('showtimes/', include('ShowtimeApp.urls')),  # Include ShowtimeApp URLs
-    path('reviews/', include('ReviewApp.urls')),      # Include ReviewApp URLs
-    path('users/', include('UserApp.urls')),    # Update this line
-    path('adminLog/', include('AdminApp.urls')),         # Include AdminApp URLs
-    path('movies/', include('MovieApp.urls')),        # Include MovieApp URLs
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # Add this line
+    path('booking/', include('BookingApp.urls')),
+    path('showtimes/', include('ShowtimeApp.urls')),
+    path('reviews/', include('ReviewApp.urls')),
+    path('users/', include('UserApp.urls')),
+    path('adminLog/', include('AdminApp.urls')),
+    path('movies/', include('MovieApp.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
