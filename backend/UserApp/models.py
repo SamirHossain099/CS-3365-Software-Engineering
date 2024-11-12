@@ -24,7 +24,7 @@ class User(models.Model):
     def __str__(self):
         return f"User {self.user_id}: {self.name}"
 
-    """
+    @classmethod
     def register_user(cls, name, email, password, address, phone_number, payment_info=None):
         try:
             if cls.objects.filter(email=email).exists():
@@ -56,9 +56,11 @@ class User(models.Model):
             
             user = cls.objects.create(**user_data)
             return True
-        except Exception:
+        except Exception as e:
+            print(f"Registration error: {str(e)}")  # Add debugging
             return False
 
+    @classmethod
     def login(cls, email, password):
         try:
             user = cls.objects.get(email=email, password=password)
@@ -66,6 +68,7 @@ class User(models.Model):
         except cls.DoesNotExist:
             return False
         
+    @classmethod
     def get_user_details(cls, user_id):
         try:
             user = cls.objects.get(user_id=user_id)
@@ -113,4 +116,3 @@ class User(models.Model):
             return details
         except cls.DoesNotExist:
             return None
-    """
