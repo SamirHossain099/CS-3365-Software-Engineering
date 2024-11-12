@@ -1,26 +1,32 @@
 /**
- * This is the movie component which will be used to display the movies
- * and their showtimes on different days.
- * The movie componenent below gives Date, Time, Movie Description, Reviews, and Purchase Ticket button.
-**/
+ * This is the movie component which displays detailed information about a specific movie,
+ * including its description, showtimes, and user reviews.
+ * Users can also book tickets for available showtimes.
+ */
 
 import "./movie.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import FallbackImage from '../../moviefallback.jpg';
+import FallbackImage from '../../moviefallback.jpg';  // Default image if movie poster fails to load
 
+// Backend URL for API calls
 const BACKEND_URL = 'http://localhost:8000';
 
 function Movie() {
+    // React Router hooks for navigation and getting movie ID from URL
     const navigate = useNavigate();
     const { movieId } = useParams();
-    const [movie, setMovie] = useState(null);
-    const [reviews, setReviews] = useState([]);
-    const [showtimes, setShowtimes] = useState([]);
-    const [selectedShowtime, setSelectedShowtime] = useState(null);
-    const [ticketCount, setTicketCount] = useState(1);
 
+    // State management for component data
+    const [movie, setMovie] = useState(null);          // Stores movie details
+    const [reviews, setReviews] = useState([]);        // Stores movie reviews
+    const [showtimes, setShowtimes] = useState([]);    // Stores available showtimes
+    const [selectedShowtime, setSelectedShowtime] = useState(null);  // Selected showtime for booking
+    const [ticketCount, setTicketCount] = useState(1); // Number of tickets to purchase
+
+    // useEffect hook to fetch movie details and showtimes when component mounts or movieId changes
     useEffect(() => {
+        // Function to fetch movie details and reviews
         const fetchMovieDetails = async () => {
             try {
                 const response = await fetch(`${BACKEND_URL}/movies/details/${movieId}/`);
@@ -37,6 +43,7 @@ function Movie() {
             }
         };
 
+        // Function to fetch available showtimes for the movie
         const fetchShowtimes = async () => {
             try {
                 const response = await fetch(`${BACKEND_URL}/showtimes/movie/${movieId}/`);
@@ -50,24 +57,29 @@ function Movie() {
             }
         };
 
+        // Call both fetch functions if movieId is available
         if (movieId) {
             fetchMovieDetails();
             fetchShowtimes();
         }
-    }, [movieId]);
+    }, [movieId]);  // Dependency array - effect runs when movieId changes
 
+    // Handler for ticket purchase
     const handlePurchase = async () => {
+        // Check if user is logged in
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user) {
-            navigate('/');
+            navigate('/');  // Redirect to login if not logged in
             return;
         }
 
+        // Validate showtime selection
         if (!selectedShowtime) {
             alert('Please select a showtime');
             return;
         }
 
+        // Attempt to create booking
         try {
             const response = await fetch(`${BACKEND_URL}/booking/create/`, {
                 method: 'POST',
@@ -83,7 +95,7 @@ function Movie() {
 
             if (response.ok) {
                 alert('Purchase successful!');
-                navigate('/profile');
+                navigate('/profile');  // Redirect to profile page after successful purchase
             } else {
                 const error = await response.json();
                 alert(error.error);
@@ -94,12 +106,15 @@ function Movie() {
         }
     };
 
+    // Show loading state while movie data is being fetched
     if (!movie) {
         return <div className="loading">Loading...</div>;
     }
 
+    // Render movie details, booking section, and reviews
     return (
         <div className="movie-details-container">
+            {/* Movie hero section with poster and basic info */}
             <div className="movie-hero">
                 <img 
                     src={movie.image ? `${BACKEND_URL}/media/${movie.image.split('/').pop()}` : FallbackImage}
@@ -125,6 +140,7 @@ function Movie() {
                 </div>
             </div>
 
+            {/* Booking section with showtime selection and ticket count */}
             <div className="booking-section">
                 <h2>Book Tickets</h2>
                 <select 
@@ -156,6 +172,7 @@ function Movie() {
                 </button>
             </div>
 
+            {/* Reviews section */}
             <div className="reviews-section">
                 <h2>Reviews</h2>
                 {reviews && reviews.length > 0 ? (
