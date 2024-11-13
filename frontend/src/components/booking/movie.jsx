@@ -18,11 +18,11 @@ function Movie() {
     const { movieId } = useParams();
 
     // State management for component data
-    const [movie, setMovie] = useState(null);          // Stores movie details
-    const [reviews, setReviews] = useState([]);        // Stores movie reviews
-    const [showtimes, setShowtimes] = useState([]);    // Stores available showtimes
+    const [movie, setMovie] = useState(null);                        // Stores movie details
+    const [reviews, setReviews] = useState([]);                      // Stores movie reviews
+    const [showtimes, setShowtimes] = useState([]);                  // Stores available showtimes
     const [selectedShowtime, setSelectedShowtime] = useState(null);  // Selected showtime for booking
-    const [ticketCount, setTicketCount] = useState(1); // Number of tickets to purchase
+    const [ticketCount, setTicketCount] = useState(1);               // Number of tickets to purchase
 
     // useEffect hook to fetch movie details and showtimes when component mounts or movieId changes
     useEffect(() => {

@@ -29,7 +29,7 @@ function Home() {
     // State for controlling search bar visibility
     const [showSearch, setShowSearch] = useState(false);
     
-    // Hook for programmatic navigation
+    // Hook for navigation
     const navigate = useNavigate();
 
     // Fetch movies when component mounts
@@ -64,10 +64,12 @@ function Home() {
         navigate("/profile");
     }
 
+    // Handle for user clicking on a movie - navigate to the associated movie page
     const handleMovieClick = (movieId) => {
         navigate(`/movie/${movieId}`);
     }
 
+    // Creating a universal HTML Card to use within the Home page for easy readability.
     const MovieCard = ({ movie }) => {
         // Update the image URL construction
         const imageUrl = movie.image ? 
