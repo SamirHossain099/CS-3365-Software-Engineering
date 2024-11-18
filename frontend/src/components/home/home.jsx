@@ -19,12 +19,13 @@ const BACKEND_URL = 'http://localhost:8000';
 
 function Home() {
     // State management for movies in each theater
-    const [theater1Movies, setTheater1Movies] = useState([]);
-    const [theater2Movies, setTheater2Movies] = useState([]);
-    const [theater3Movies, setTheater3Movies] = useState([]);
-    const [theater4Movies, setTheater4Movies] = useState([]);
-    const [theater5Movies, setTheater5Movies] = useState([]);
-    const [theater6Movies, setTheater6Movies] = useState([]);
+    const [theater1Movies, setTheater1Movies] = useState({ now: [], upcoming: [] });
+    const [theater2Movies, setTheater2Movies] = useState({ now: [], upcoming: [] });
+    const [theater3Movies, setTheater3Movies] = useState({ now: [], upcoming: [] });
+    const [theater4Movies, setTheater4Movies] = useState({ now: [], upcoming: [] });
+    const [theater5Movies, setTheater5Movies] = useState({ now: [], upcoming: [] });
+    const [theater6Movies, setTheater6Movies] = useState({ now: [], upcoming: [] });
+
     
     // State for controlling search bar visibility
     const [showSearch, setShowSearch] = useState(false);
@@ -38,6 +39,7 @@ function Home() {
     }, []);
 
     // Function to fetch movies from backend and sort them by theater location
+    
     const fetchMovies = async () => {
         try {
             const response = await fetch('/movies/viewmovies/');
@@ -45,15 +47,32 @@ function Home() {
                 throw new Error('Failed to fetch movies');
             }
             const data = await response.json();
-            console.log('Movie data:', data.movies[0]);
-            
-            // Filter movies by their respective theater locations
-            setTheater1Movies(data.movies.filter(movie => movie.location === 'Lubbock, TX'));
-            setTheater2Movies(data.movies.filter(movie => movie.location === 'Amarillo'));
-            setTheater3Movies(data.movies.filter(movie => movie.location === 'Levelland, TX'));
-            setTheater4Movies(data.movies.filter(movie => movie.location === 'Plainview, TX'));
-            setTheater5Movies(data.movies.filter(movie => movie.location === 'Snyder, TX'));
-            setTheater6Movies(data.movies.filter(movie => movie.location === 'Abilene, TX'));
+
+            // Separate movies into "Now" and "Upcoming" categories for each theater
+            setTheater1Movies({
+                now: data.now_movies.filter(movie => movie.location === 'Lubbock, TX'),
+                upcoming: data.upcoming_movies.filter(movie => movie.location === 'Lubbock, TX')
+            });
+            setTheater2Movies({
+                now: data.now_movies.filter(movie => movie.location === 'Amarillo'),
+                upcoming: data.upcoming_movies.filter(movie => movie.location === 'Amarillo')
+            });
+            setTheater3Movies({
+                now: data.now_movies.filter(movie => movie.location === 'Levelland, TX'),
+                upcoming: data.upcoming_movies.filter(movie => movie.location === 'Levelland, TX')
+            });
+            setTheater4Movies({
+                now: data.now_movies.filter(movie => movie.location === 'Plainview, TX'),
+                upcoming: data.upcoming_movies.filter(movie => movie.location === 'Plainview, TX')
+            });
+            setTheater5Movies({
+                now: data.now_movies.filter(movie => movie.location === 'Snyder, TX'),
+                upcoming: data.upcoming_movies.filter(movie => movie.location === 'Snyder, TX')
+            });
+            setTheater6Movies({
+                now: data.now_movies.filter(movie => movie.location === 'Abilene, TX'),
+                upcoming: data.upcoming_movies.filter(movie => movie.location === 'Abilene, TX')
+            });
         } catch (error) {
             console.error('Error fetching movies:', error);
         }
@@ -146,8 +165,15 @@ function Home() {
                 {/* Theater 1 section */}
                 <div className="theater-section">
                     <h2>Lubbock, TX</h2>
+                    <h3>Now Playing</h3>
                     <div className="movies-container">
-                        {theater1Movies.map(movie => (
+                        {theater1Movies.now.map(movie => (
+                            <MovieCard key={movie.movie_id} movie={movie} />
+                        ))}
+                    </div>
+                    <h3>Upcoming Movies</h3>
+                    <div className="movies-container">
+                        {theater1Movies.upcoming.map(movie => (
                             <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
@@ -157,7 +183,13 @@ function Home() {
                 <div className="theater-section">
                     <h2>Amarillo, TX</h2>
                     <div className="movies-container">
-                        {theater2Movies.map(movie => (
+                        {theater2Movies.now.map(movie => (
+                            <MovieCard key={movie.movie_id} movie={movie} />
+                        ))}
+                    </div>
+                    <h3>Upcoming Movies</h3>
+                    <div className="movies-container">
+                        {theater2Movies.upcoming.map(movie => (
                             <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
@@ -167,7 +199,13 @@ function Home() {
                 <div className="theater-section">
                     <h2>Levelland, TX</h2>
                     <div className="movies-container">
-                        {theater3Movies.map(movie => (
+                        {theater3Movies.now.map(movie => (
+                            <MovieCard key={movie.movie_id} movie={movie} />
+                        ))}
+                    </div>
+                    <h3>Upcoming Movies</h3>
+                    <div className="movies-container">
+                        {theater3Movies.upcoming.map(movie => (
                             <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
@@ -177,7 +215,13 @@ function Home() {
                 <div className="theater-section">
                     <h2>Plainview, TX</h2>
                     <div className="movies-container">
-                        {theater4Movies.map(movie => (
+                        {theater4Movies.now.map(movie => (
+                            <MovieCard key={movie.movie_id} movie={movie} />
+                        ))}
+                    </div>
+                    <h3>Upcoming Movies</h3>
+                    <div className="movies-container">
+                        {theater4Movies.upcoming.map(movie => (
                             <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
@@ -187,7 +231,13 @@ function Home() {
                 <div className="theater-section">
                     <h2>Snyder, TX</h2>
                     <div className="movies-container">
-                        {theater5Movies.map(movie => (
+                        {theater5Movies.now.map(movie => (
+                            <MovieCard key={movie.movie_id} movie={movie} />
+                        ))}
+                    </div>
+                    <h3>Upcoming Movies</h3>
+                    <div className="movies-container">
+                        {theater5Movies.upcoming.map(movie => (
                             <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
@@ -197,7 +247,13 @@ function Home() {
                 <div className="theater-section">
                     <h2>Abiliene, TX</h2>
                     <div className="movies-container">
-                        {theater6Movies.map(movie => (
+                        {theater6Movies.now.map(movie => (
+                            <MovieCard key={movie.movie_id} movie={movie} />
+                        ))}
+                    </div>
+                    <h3>Upcoming Movies</h3>
+                    <div className="movies-container">
+                        {theater6Movies.upcoming.map(movie => (
                             <MovieCard key={movie.movie_id} movie={movie} />
                         ))}
                     </div>
