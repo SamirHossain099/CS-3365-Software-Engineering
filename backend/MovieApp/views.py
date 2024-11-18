@@ -60,8 +60,9 @@ def get_movie_reviews(request, movie_id):
 
 def get_movie_list(request):
     movies = Movie.objects.all()
-    movie_list = [get_movie_details(movie) for movie in movies]
-    return JsonResponse({'movies': movie_list})
+    now_movies = [get_movie_details(movie) for movie in movies if not movie.upcoming]      # Filter for Now movies
+    upcoming_movies = [get_movie_details(movie) for movie in movies if movie.upcoming]     # Filter for Upcoming movies
+    return JsonResponse({'now_movies': now_movies, 'upcoming_movies': upcoming_movies})    # Return both lists
 
 def get_review_details(review):
     return {

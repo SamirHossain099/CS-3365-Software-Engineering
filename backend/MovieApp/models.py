@@ -11,6 +11,7 @@ class Movie(models.Model):
     image = models.ImageField(null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     director = models.CharField(max_length=225, null=True, blank=True)
+    upcoming = models.BooleanField(default=False)
     imdb_rating = models.DecimalField(
         max_digits=2, decimal_places=1,
         validators=[MinValueValidator(0.0), MaxValueValidator(5.0)]
