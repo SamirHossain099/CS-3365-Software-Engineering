@@ -7,6 +7,9 @@ buy tickets online, with options to print or display them on their personal devi
 Key features include user registration and login, browsing and searching movie catalogs, secure ticket booking,
 electronic ticket generation, and user movie reviews.
 
+## Pre - Installation:
+Please have [Node.js](https://nodejs.org/en) and [Python](https://python.org/) installed to use the installation process below.
+
 ## Installation
   1. First create a virtual environment for python libraries.
 ```
@@ -18,7 +21,7 @@ myenv\Scripts\activate
 ```
   4. Install the following python libraries from Django
 ```
-pip install django djangorestframework
+pip install django djangorestframework django-cors-headers
 ```
   5. (OPTIONAL) Install Node.js if not installed on your PC/LAPTOP.
   6. Enter the frontend directory and run the following command.
