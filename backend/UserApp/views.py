@@ -5,6 +5,10 @@ from django.views.decorators.csrf import csrf_exempt
 from .models import User
 import json
 from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth import authenticate, login
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 def is_admin(user):
     return user.is_authenticated and user.is_staff
@@ -109,47 +113,45 @@ class RegisterUserView(View):
             }, status=400)
 
 @method_decorator(csrf_exempt, name='dispatch')
-class LoginUserView(View):
-    def post(self, request, *args, **kwargs):
+class LoginUserView(APIView):
+    authentication_classes = []  # Disable authentication for login
+    permission_classes = []      # Disable permissions for login
+
+    def post(self, request):
         try:
-            # Parse the incoming JSON data
-            data = json.loads(request.body)
+            email = request.data.get('email')
+            password = request.data.get('password')
             
-            # Extract login credentials
-            email = data.get('email')
-            password = data.get('password')  # Note: Should be hashed in production
+            if not email or not password:
+                return Response(
+                    {'error': 'Email and password are required'}, 
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # Use email as username since we're using email for authentication
+            user = authenticate(request, username=email, password=password)
             
-            # Validate required fields
-            if not all([email, password]):
-                return JsonResponse({
-                    'success': False,
-                    'error': 'Missing email or password'
-                }, status=400)
-            
-            # Attempt to login
-            success = User.login(email=email, password=password)
-            
-            if success:
-                # Get user details
-                user = User.objects.get(email=email)
-                user_details = User.get_user_details(user.user_id)
-                
-                return JsonResponse({
-                    'success': True,
-                    'message': 'Login successful',
-                    'user': user_details
-                })
+            if user is not None:
+                login(request, user)
+                return Response({
+                    'user': {
+                        'id': user.user_id,
+                        'email': user.email,
+                        'name': user.name
+                    }
+                }, status=status.HTTP_200_OK)
             else:
-                return JsonResponse({
-                    'success': False,
-                    'error': 'Invalid email or password'
-                }, status=401)
-            
-        except json.JSONDecodeError:
-            return JsonResponse({
-                'success': False,
-                'error': 'Invalid JSON'
-            }, status=400)
+                return Response(
+                    {'error': 'Invalid email or password'}, 
+                    status=status.HTTP_401_UNAUTHORIZED
+                )
+                
+        except Exception as e:
+            print(f"Login error: {str(e)}")  # For debugging
+            return Response(
+                {'error': 'Server error'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 @csrf_exempt
 @user_passes_test(is_admin)

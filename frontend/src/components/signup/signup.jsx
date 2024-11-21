@@ -27,9 +27,10 @@ function SignUpIn() {
         const address = isSignIn ? null : e.target.address.value;
         const phone = isSignIn ? null : e.target.phone.value;
 
-        // Depending on if Sign-In or Sign-Up, use the API endpoints login or register to send the information to backend.
         try {
-            const endpoint = isSignIn ? '/users/login/' : '/users/register/';
+            // Add the full URL
+            const baseUrl = 'http://localhost:8000';
+            const endpoint = isSignIn ? `${baseUrl}/users/login/` : `${baseUrl}/users/register/`;
             const body = isSignIn 
                 ? { email, password }
                 : { 
@@ -46,18 +47,20 @@ function SignUpIn() {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                 },
+                credentials: 'include', // Important for handling cookies
                 body: JSON.stringify(body)
             });
 
+            const data = await response.json();
+
             // Error handling
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'Server error');
+                throw new Error(data.error || 'Server error');
             }
 
             // If data gets sent and good response, then navigate to the home page for user.
-            const data = await response.json();
             localStorage.setItem('user', JSON.stringify(data.user));
             navigate("/home");
         } catch (error) {

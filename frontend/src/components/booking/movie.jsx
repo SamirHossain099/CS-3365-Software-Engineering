@@ -106,6 +106,64 @@ function Movie() {
         }
     };
 
+    const handleCreateReview = async () => {
+        const user = JSON.parse(localStorage.getItem('user'));
+        
+        if (!user) {
+            navigate('/');
+            return;
+        }
+
+        const rating = prompt("Enter your rating (1-5):");
+        const reviewText = prompt("Enter your review:");
+
+        // Validate rating
+        const ratingNum = parseInt(rating);
+        if (isNaN(ratingNum) || ratingNum < 1 || ratingNum > 5) {
+            alert('Please enter a valid rating between 1 and 5');
+            return;
+        }
+
+        // Validate review text
+        if (!reviewText || reviewText.trim() === '') {
+            alert('Please enter a review text');
+            return;
+        }
+
+        const requestData = {
+            movie_id: parseInt(movieId),
+            rating: ratingNum,
+            review_text: reviewText.trim(),
+            user_id: user.id
+        };
+
+        try {
+            const response = await fetch(`${BACKEND_URL}/reviews/add/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to create review');
+            }
+
+            const data = await response.json();
+            alert('Review created successfully!');
+            
+            // Refresh the reviews
+            const reviewsResponse = await fetch(`${BACKEND_URL}/movies/details/${movieId}/`);
+            const reviewsData = await reviewsResponse.json();
+            setReviews(reviewsData.reviews || []);
+        } catch (error) {
+            console.error('Error:', error);
+            alert(error.message || 'An error occurred while creating your review.');
+        }
+    };
+
     // Show loading state while movie data is being fetched
     if (!movie) {
         return <div className="loading">Loading...</div>;
@@ -189,6 +247,7 @@ function Movie() {
                 ) : (
                     <p>No reviews yet.</p>
                 )}
+                <button onClick={handleCreateReview}>Create Review</button>
             </div>
         </div>
     );

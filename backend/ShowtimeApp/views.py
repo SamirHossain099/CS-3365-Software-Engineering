@@ -13,7 +13,7 @@ class ShowtimeListView(View):
     def get(self, request, *args, **kwargs):
         showtimes = Showtime.objects.all().order_by('-show_date', '-show_time')
         data = list(showtimes.values(
-            'showtime_id', 'movie_id', 'theater_location', 'show_date', 'show_time', 'ticket_price', 'available_seats'
+            'showtime_id', 'movie_id', 'show_date', 'show_time', 'ticket_price', 'available_seats'
         ))
         return JsonResponse({'showtimes': data}, safe=False)
 
@@ -24,14 +24,13 @@ class ShowtimeCreateView(View):
         try:
             data = json.loads(request.body)
             movie_id = data.get('movie_id')
-            theater_location = data.get('theater_location')
             show_date = data.get('show_date')
             show_time = data.get('show_time')
             ticket_price = data.get('ticket_price')
             available_seats = data.get('available_seats', 100)  # Default to 100 if not provided
 
             # Validate required fields
-            if not all([movie_id, theater_location, show_date, show_time, ticket_price]):
+            if not all([movie_id, show_date, show_time, ticket_price]):
                 return JsonResponse({'success': False, 'error': 'Missing required fields'}, status=400)
 
             # Validate movie existence
@@ -63,7 +62,6 @@ class ShowtimeCreateView(View):
                 # Create showtime
                 showtime = Showtime.objects.create(
                     movie=movie,
-                    theater_location=theater_location,
                     show_date=show_date_obj,
                     show_time=show_time_obj,
                     ticket_price=ticket_price,
@@ -73,7 +71,6 @@ class ShowtimeCreateView(View):
             data = {
                 'showtime_id': showtime.showtime_id,
                 'movie_id': showtime.movie.id,
-                'theater_location': showtime.theater_location,
                 'show_date': showtime.show_date,
                 'show_time': showtime.show_time,
                 'ticket_price': str(showtime.ticket_price),
@@ -91,7 +88,7 @@ class ShowtimesByMovieView(View):
             movie = Movie.objects.get(pk=int(movie_id))
             showtimes = Showtime.objects.filter(movie=movie).order_by('-show_date', '-show_time')
             data = list(showtimes.values(
-                'showtime_id', 'theater_location', 'show_date', 'show_time', 'ticket_price', 'available_seats'
+                'showtime_id', 'show_date', 'show_time', 'ticket_price', 'available_seats'
             ))
             return JsonResponse({'showtimes': data}, safe=False)
         except (TypeError, ValueError, Movie.DoesNotExist):
@@ -102,7 +99,7 @@ class ShowtimesByTheaterView(View):
     def get(self, request, theater_location, *args, **kwargs):
         showtimes = Showtime.objects.filter(theater_location__icontains=theater_location).order_by('-show_date', '-show_time')
         data = list(showtimes.values(
-            'showtime_id', 'movie_id', 'theater_location', 'show_date', 'show_time', 'ticket_price', 'available_seats'
+            'showtime_id', 'movie_id', 'show_date', 'show_time', 'ticket_price', 'available_seats'
         ))
         return JsonResponse({'showtimes': data}, safe=False)
 
@@ -116,7 +113,6 @@ class ShowtimeUpdateView(View):
 
             # Extract fields to update
             movie_id = data.get('movie_id', showtime.movie.id)
-            theater_location = data.get('theater_location', showtime.theater_location)
             show_date = data.get('show_date', showtime.show_date.strftime('%Y-%m-%d'))
             show_time = data.get('show_time', showtime.show_time.strftime('%H:%M'))
             ticket_price = data.get('ticket_price', showtime.ticket_price)
@@ -150,7 +146,6 @@ class ShowtimeUpdateView(View):
             with transaction.atomic():
                 # Update showtime fields
                 showtime.movie = movie
-                showtime.theater_location = theater_location
                 showtime.show_date = show_date_obj
                 showtime.show_time = show_time_obj
                 showtime.ticket_price = ticket_price
@@ -160,7 +155,6 @@ class ShowtimeUpdateView(View):
             data = {
                 'showtime_id': showtime.showtime_id,
                 'movie_id': showtime.movie.id,
-                'theater_location': showtime.theater_location,
                 'show_date': showtime.show_date,
                 'show_time': showtime.show_time,
                 'ticket_price': str(showtime.ticket_price),
