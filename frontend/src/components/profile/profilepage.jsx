@@ -12,7 +12,7 @@ function ProfilePage() {
 
     useEffect(() => {
         async function fetchUserDetails() {
-            const userData = await get_user_details(); // Assume this is a globally available function
+            const userData = await get_user_details();
             setUserDetails(userData);
         }
         fetchUserDetails();
