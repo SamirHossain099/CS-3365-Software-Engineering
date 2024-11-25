@@ -39,6 +39,14 @@ python manage.py runserver
 npm run start
 ```
 
+  10. (OPTIONAL) If you want to login into the admin system, use the following URL and credentials:
+```
+http://127.0.0.1:8000/admin/
+
+Email: admin@gmail.com
+Password: admin
+```
+
 ## Authors
 - [Wesley Spangler](https://github.com/InfiniteWes)
 - [Samir Hossain](https://github.com/SamirHossain099)
