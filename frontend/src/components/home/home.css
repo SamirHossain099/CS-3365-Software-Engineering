@@ -99,3 +99,12 @@
     margin-top: 10px;
     font-weight: bold;
 }
+
+.search-results {
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.search-results h2 {
+    margin-bottom: 15px;
+}

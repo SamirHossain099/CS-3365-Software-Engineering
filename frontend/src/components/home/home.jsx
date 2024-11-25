@@ -33,6 +33,10 @@ function Home() {
     // Hook for navigation
     const navigate = useNavigate();
 
+    // Add new state for search
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchResults, setSearchResults] = useState([]);
+
     // Fetch movies when component mounts
     useEffect(() => {
         fetchMovies();
@@ -88,6 +92,34 @@ function Home() {
         navigate(`/movie/${movieId}`);
     }
 
+    // Add this new function to handle search
+    const handleSearch = (event) => {
+        const term = event.target.value;
+        setSearchTerm(term);
+        
+        if (term.trim() === "") {
+            setSearchResults([]);
+            return;
+        }
+
+        // Combine all movies from all theaters
+        const allMovies = [
+            ...theater1Movies.now, ...theater1Movies.upcoming,
+            ...theater2Movies.now, ...theater2Movies.upcoming,
+            ...theater3Movies.now, ...theater3Movies.upcoming,
+            ...theater4Movies.now, ...theater4Movies.upcoming,
+            ...theater5Movies.now, ...theater5Movies.upcoming,
+            ...theater6Movies.now, ...theater6Movies.upcoming,
+        ];
+
+        // Filter movies based on search term
+        const results = allMovies.filter(movie =>
+            movie.title.toLowerCase().includes(term.toLowerCase())
+        );
+
+        setSearchResults(results);
+    };
+
     // Creating a universal HTML Card to use within the Home page for easy readability.
     const MovieCard = ({ movie }) => {
         // Update the image URL construction
@@ -141,7 +173,9 @@ function Home() {
                     <input 
                         type="search" 
                         placeholder="Search for a movie" 
-                        className={`search-bar ${showSearch ? 'show' : 'hide'}`} 
+                        className={`search-bar ${showSearch ? 'show' : 'hide'}`}
+                        value={searchTerm}
+                        onChange={handleSearch}
                     />
                     <img 
                         src={SearchIcon} 
@@ -152,6 +186,18 @@ function Home() {
                 </div>
             </div>
             
+            {/* Add this new section for search results */}
+            {searchResults.length > 0 && (
+                <div className="search-results">
+                    <h2>Search Results</h2>
+                    <div className="movies-container">
+                        {searchResults.map(movie => (
+                            <MovieCard key={movie.movie_id} movie={movie} />
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Main content container for theaters and movies */}
             <div className="main-content">
                 {/* Each theater section follows the same pattern:
