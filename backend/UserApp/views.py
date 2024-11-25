@@ -203,59 +203,70 @@ def get_all_users(request):
             'error': str(e)
         }, status=500)
 
-# Create function the updates users information on the profile page   
-def update(request):
-    # Ability to allow user to update there pages
-    if request.method != 'POST':
-        return JsonResponse({'error': 'Method not allowed'}, status=405)
-    
-    try:
-        # Parse the incoming JSON data
-        data = json.loads(request.body)
+@method_decorator(csrf_exempt, name='dispatch')
+class UpdateUserView(View):
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
 
-        # Extract user ID and fields to update
-        user_id = data.get('user_id')
-        name = data.get('name')
-        email = data.get('email')
-        address = data.get('address')
-        phone = data.get('phone')
+            user_id = data.get('user_id')
+            name = data.get('name')
+            email = data.get('email')
+            address = data.get('address')
+            phone = data.get('phone')
 
-        # Validate required fields
-        if not all([user_id, name, email, address, phone]):
+            if not all([user_id, name, email, address, phone]):
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Missing required fields'
+                }, status=400)
+            
+            if len(phone) != 10:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'Phone number must be 10 digits'
+                }, status=400)
+            
+            user = User.objects.get(user_id=user_id)
+            user.name = name
+            user.email = email
+            user.address = address
+            user.phone = phone
+            user.save()
+
+            return JsonResponse({
+                'success': True,
+                'message': 'User information updated successfully'
+            })
+        except User.DoesNotExist:
             return JsonResponse({
                 'success': False,
-                'error': 'Missing required fields'
-            }, status=400)
-        
-        if len(phone) != 10:
+                'error': 'User not found'
+            }, status=404)
+        except json.JSONDecodeError:
             return JsonResponse({
                 'success': False,
-                'error': 'Phone number must be 10 digits'
+                'error': 'Invalid JSON'
             }, status=400)
-        
-        user = User.objects.get(user_id=user_id)
-        user.name = name
-        user.email = email
-        user.address = address
-        user.phone = phone
-        user.save()
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
 
-        return JsonResponse({
-            'succss': True,
-            'message': 'User information updated successfully'
-        })
-    except User.DoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'error': 'User not found'
-        }, status=404)
-    except json.JSONDecodeError:
-        return JsonResponse({
-            'success': False,
-            'error': 'Invalid JSON'
-        }, status=400)
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'error': str(e)
-        }, status=500)
+@method_decorator(csrf_exempt, name='dispatch')
+class UserDetailView(View):
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(user_id=user_id)
+            return JsonResponse({
+                'user_id': user.user_id,
+                'name': user.name,
+                'email': user.email,
+                'address': user.address,
+                'phone_number': user.phone
+            })
+        except User.DoesNotExist:
+            return JsonResponse({
+                'error': 'User not found'
+            }, status=404)
