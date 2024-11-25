@@ -19,7 +19,7 @@ function Checkout() {
                     type="button"
                     onClick={() => setIsPaypal(false)}
                 >
-                    Credit Card
+                    Credit/Debit Card
                 </button>
                 <button 
                     className={`payment-button ${isPaypal ? 'active' : ''}`}
