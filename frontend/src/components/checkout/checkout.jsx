@@ -5,16 +5,33 @@
 **/
 
 import "./checkout.css";
+import { useState } from "react";
 
 function Checkout() {
     const [isPaypal, setIsPaypal] = useState(false);
-
+    
     return (
-        <dialog>
+        <div className="checkout-container">
             <h2>Checkout</h2>
+            <div className="payment-method-buttons">
+                <button 
+                    className={`payment-button ${!isPaypal ? 'active' : ''}`}
+                    type="button"
+                    onClick={() => setIsPaypal(false)}
+                >
+                    Credit Card
+                </button>
+                <button 
+                    className={`payment-button ${isPaypal ? 'active' : ''}`}
+                    type="button"
+                    onClick={() => setIsPaypal(true)}
+                >
+                    PayPal
+                </button>
+            </div>
             <form>
-                {/* Section for the user's information.*/}
-                <div>
+                {/* Section for the user's information */}
+                <div className="form-section">
                     <label htmlFor="Firstname">First Name</label>
                     <input type="text" id="Firstname" name="Firstname" required />
                     <label htmlFor="Lastname">Last Name</label>
@@ -28,18 +45,27 @@ function Checkout() {
                     <label htmlFor="Zipcode">Zipcode</label>
                     <input type="text" id="Zipcode" name="Zipcode" required />
                 </div>
-                {/* Section for the user's payment information.*/}
-                <div>
-                    <label htmlFor="CardNumber">Credit/Debit Card Number</label>
-                    <input type="text" id="CardNumber" name="CardNumber" required />
-                    <label htmlFor="CardExpiration">Card Expiration</label>
-                    <input type="text" id="CardExpiration" name="CardExpiration" required />
-                    <label htmlFor="CardSecurityCode">Card Security Code</label>
-                    <input type="text" id="CardSecurityCode" name="CardSecurityCode" required />
-                </div>
-                <button type="submit">Checkout</button>
+                
+                {/* Conditional rendering of payment section */}
+                {!isPaypal ? (
+                    <div className="form-section">
+                        <label htmlFor="CardNumber">Credit/Debit Card Number</label>
+                        <input type="text" id="CardNumber" name="CardNumber" required />
+                        <label htmlFor="CardExpiration">Card Expiration</label>
+                        <input type="text" id="CardExpiration" name="CardExpiration" required />
+                        <label htmlFor="CardSecurityCode">Card Security Code</label>
+                        <input type="text" id="CardSecurityCode" name="CardSecurityCode" required />
+                    </div>
+                ) : (
+                    <div className="paypal-section">
+                        <p>You will be redirected to PayPal to complete your payment.</p>
+                    </div>
+                )}
+                <button type="submit" className="submit-button">
+                    {isPaypal ? 'Continue to PayPal' : 'Complete Purchase'}
+                </button>
             </form>
-        </dialog>
+        </div>
     )
 }
 

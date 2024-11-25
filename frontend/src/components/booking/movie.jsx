@@ -8,6 +8,7 @@ import "./movie.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import FallbackImage from '../../moviefallback.jpg';  // Default image if movie poster fails to load
+import Checkout from "../checkout/checkout";
 
 // Backend URL for API calls
 const BACKEND_URL = 'http://localhost:8000';
@@ -23,6 +24,7 @@ function Movie() {
     const [showtimes, setShowtimes] = useState([]);                  // Stores available showtimes
     const [selectedShowtime, setSelectedShowtime] = useState(null);  // Selected showtime for booking
     const [ticketCount, setTicketCount] = useState(1);               // Number of tickets to purchase
+    const [showCheckout, setShowCheckout] = useState(false);
 
     // useEffect hook to fetch movie details and showtimes when component mounts or movieId changes
     useEffect(() => {
@@ -79,31 +81,8 @@ function Movie() {
             return;
         }
 
-        // Attempt to create booking
-        try {
-            const response = await fetch(`${BACKEND_URL}/booking/create/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    user_id: user.id,
-                    showtime_id: selectedShowtime,
-                    ticket_count: ticketCount,
-                })
-            });
-
-            if (response.ok) {
-                alert('Purchase successful!');
-                navigate('/profile');  // Redirect to profile page after successful purchase
-            } else {
-                const error = await response.json();
-                alert(error.error);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('An error occurred while processing your purchase.');
-        }
+        // Navigate to checkout page
+        navigate('/checkout');
     };
 
     const handleCreateReview = async () => {
@@ -249,6 +228,8 @@ function Movie() {
                 )}
                 <button onClick={handleCreateReview}>Create Review</button>
             </div>
+
+            {showCheckout && <Checkout />}
         </div>
     );
 }

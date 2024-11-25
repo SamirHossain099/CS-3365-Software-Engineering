@@ -4,7 +4,7 @@ import SignUpIn from "./components/signup/signup";
 import Home from "./components/home/home";
 import ProfilePage from "./components/profile/profilepage";
 import Movie from "./components/booking/movie";
-
+import Checkout from "./components/checkout/checkout";
 function AppRouter() {
     return (
         <Router>
@@ -13,6 +13,7 @@ function AppRouter() {
                 <Route path="/home" element={<Home />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/movie/:movieId" element={<Movie />} />
+                <Route path="/checkout" element={<Checkout />} />
             </Routes>
         </Router>
     )
