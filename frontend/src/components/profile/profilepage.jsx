@@ -11,6 +11,7 @@ function ProfilePage() {
     });
     const [isEditing, setIsEditing] = useState(false);
     const [editedDetails, setEditedDetails] = useState({});
+    const [ticketHistory, setTicketHistory] = useState([]);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -22,29 +23,89 @@ function ProfilePage() {
                     return;
                 }
 
+                console.log('Current user session:', userSession);
+
                 const response = await fetch(`/users/users/${userSession.id}/`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest',
                     },
+                    credentials: 'include',
                 });
 
                 if (response.ok) {
                     const userData = await response.json();
+                    console.log('User data:', userData);
                     setUserDetails(userData);
                     setEditedDetails(userData);
                 } else {
                     const errorText = await response.text();
                     console.error('Failed to fetch user data:', errorText);
                 }
+
+                const [apiTickets, localTickets] = await Promise.all([
+                    fetchApiTickets(userSession.id),
+                    getLocalStorageTickets(userSession.id)
+                ]);
+
+                const combinedTickets = [...apiTickets, ...localTickets].reduce((acc, ticket) => {
+                    const id = ticket.booking_id || ticket.ticketId;
+                    if (!acc.some(t => (t.booking_id || t.ticketId) === id)) {
+                        const normalizedTicket = {
+                            booking_id: ticket.booking_id || ticket.ticketId,
+                            movie_title: ticket.movie_title || ticket.movieTitle,
+                            show_date: ticket.show_date || ticket.showDate,
+                            show_time: ticket.show_time || ticket.showTime,
+                            theater_location: ticket.theater_location || ticket.theaterLocation,
+                            ticket_count: ticket.ticket_count || ticket.ticketCount,
+                            total_price: ticket.total_price || ticket.totalPrice
+                        };
+                        acc.push(normalizedTicket);
+                    }
+                    return acc;
+                }, []);
+
+                setTicketHistory(combinedTickets);
             } catch (error) {
-                console.error('Error fetching user data:', error);
+                console.error('Error in fetchUserData:', error);
             }
         };
 
         fetchUserData();
     }, []);
+
+    const fetchApiTickets = async (userId) => {
+        try {
+            const ticketsResponse = await fetch(`/booking/user/${userId}/tickets/`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                credentials: 'include',
+            });
+
+            if (ticketsResponse.ok) {
+                const ticketData = await ticketsResponse.json();
+                return ticketData.success && ticketData.bookings ? ticketData.bookings : [];
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching API tickets:', error);
+            return [];
+        }
+    };
+
+    const getLocalStorageTickets = (userId) => {
+        try {
+            const localTickets = JSON.parse(localStorage.getItem(`tickets_${userId}`)) || [];
+            return localTickets;
+        } catch (error) {
+            console.error('Error getting localStorage tickets:', error);
+            return [];
+        }
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -163,6 +224,29 @@ function ProfilePage() {
                             }}>Cancel</button>
                         </div>
                     </form>
+                )}
+            </div>
+
+            <div className="ticket-history">
+                <h2>History of Tickets</h2>
+                {ticketHistory.length > 0 ? (
+                    <div className="tickets-container">
+                        {ticketHistory.map((ticket) => (
+                            <div key={ticket.booking_id} className="ticket-card">
+                                <h3>{ticket.movie_title}</h3>
+                                <div className="ticket-info">
+                                    <p>Date: {new Date(ticket.show_date).toLocaleDateString()}</p>
+                                    <p>Time: {ticket.show_time}</p>
+                                    <p>Theater: {ticket.theater_location}</p>
+                                    <p>Tickets: {ticket.ticket_count}</p>
+                                    <p>Total Paid: ${ticket.total_price}</p>
+                                    <p>Booking ID: {ticket.booking_id}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    <p>No ticket history found.</p>
                 )}
             </div>
         </div>

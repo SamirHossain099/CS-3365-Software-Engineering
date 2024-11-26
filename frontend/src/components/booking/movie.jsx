@@ -8,7 +8,6 @@ import "./movie.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import FallbackImage from '../../moviefallback.jpg';  // Default image if movie poster fails to load
-import Checkout from "../checkout/checkout";
 
 // Backend URL for API calls
 const BACKEND_URL = 'http://localhost:8000';
@@ -24,7 +23,6 @@ function Movie() {
     const [showtimes, setShowtimes] = useState([]);                  // Stores available showtimes
     const [selectedShowtime, setSelectedShowtime] = useState(null);  // Selected showtime for booking
     const [ticketCount, setTicketCount] = useState(1);               // Number of tickets to purchase
-    const [showCheckout, setShowCheckout] = useState(false);
 
     // useEffect hook to fetch movie details and showtimes when component mounts or movieId changes
     useEffect(() => {
@@ -67,22 +65,43 @@ function Movie() {
     }, [movieId]);  // Dependency array - effect runs when movieId changes
 
     // Handler for ticket purchase
-    const handlePurchase = async () => {
-        // Check if user is logged in
+    const handlePurchase = () => {
         const user = JSON.parse(localStorage.getItem('user'));
         if (!user) {
-            navigate('/');  // Redirect to login if not logged in
+            alert('Please log in to purchase tickets');
+            navigate('/login');
             return;
         }
 
-        // Validate showtime selection
         if (!selectedShowtime) {
             alert('Please select a showtime');
             return;
         }
 
-        // Navigate to checkout page
-        navigate('/checkout');
+        // Find the selected showtime object
+        const showtime = showtimes.find(st => st.showtime_id === parseInt(selectedShowtime));
+        if (!showtime) {
+            alert('Invalid showtime');
+            return;
+        }
+
+        if (ticketCount < 1) {
+            alert('Please select at least one ticket');
+            return;
+        }
+
+        // Navigate to checkout page with necessary information
+        navigate('/checkout', {
+            state: {
+                showtimeId: parseInt(selectedShowtime),
+                ticketPrice: Number(showtime.ticket_price),
+                ticketCount: ticketCount,
+                movieTitle: movie.title,
+                showDate: showtime.show_date,
+                showTime: showtime.show_time,
+                theaterLocation: showtime.theater_location
+            }
+        });
     };
 
     const handleCreateReview = async () => {
@@ -228,8 +247,6 @@ function Movie() {
                 )}
                 <button onClick={handleCreateReview}>Create Review</button>
             </div>
-
-            {showCheckout && <Checkout />}
         </div>
     );
 }

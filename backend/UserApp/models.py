@@ -76,6 +76,7 @@ class User(AbstractUser):
     debit_card_billing = models.CharField(max_length=100, null=True, blank=True)
     has_paypal = models.BooleanField(default=False)
     paypal_email = models.EmailField(null=True, blank=True)
+    tickets = models.ManyToManyField('BookingApp.Booking', related_name='ticket_holders', blank=True)
 
     objects = CustomUserManager()
 

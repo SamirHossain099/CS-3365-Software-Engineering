@@ -1,0 +1,58 @@
+{% extends "admin/change_list.html" %}
+{% load i18n %}
+
+{% block content_title %}
+    <h1>Admin Dashboard</h1>
+    <div class="statistics-container">
+        <div class="stat-section">
+            <h2>User Statistics</h2>
+            <div class="stat-box">
+                <span class="stat-label">Total Users:</span>
+                <span class="stat-value">{{ total_users }}</span>
+            </div>
+        </div>
+
+        <div class="stat-section">
+            <h2>Movie Statistics</h2>
+            <div class="stat-box">
+                <span class="stat-label">Total Movies:</span>
+                <span class="stat-value">{{ total_movies }}</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Upcoming Movies:</span>
+                <span class="stat-value">{{ upcoming_movies }}</span>
+            </div>
+            <div class="stat-box">
+                <span class="stat-label">Current Movies:</span>
+                <span class="stat-value">{{ current_movies }}</span>
+            </div>
+        </div>
+
+        <div class="stat-section">
+            <h2>Booking Statistics</h2>
+            <div class="stat-box">
+                <span class="stat-label">Total Bookings:</span>
+                <span class="stat-value">{{ total_bookings }}</span>
+            </div>
+        </div>
+
+        <div class="stat-section">
+            <h2>Review Statistics</h2>
+            <div class="stat-box">
+                <span class="stat-label">Total Reviews:</span>
+                <span class="stat-value">{{ total_reviews }}</span>
+            </div>
+        </div>
+
+        <div class="stat-section">
+            <h2>Admin Activity</h2>
+            {% for activity in admin_activity %}
+            <div class="stat-box">
+                <span class="stat-label">Admin ID {{ activity.admin_id }}:</span>
+                <span class="stat-value">{{ activity.action_count }} actions</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {{ block.super }}
+{% endblock %} 
