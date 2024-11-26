@@ -19,24 +19,30 @@ virtualenv myenv
 ```
 myenv\Scripts\activate
 ```
-  4. Install the following python libraries from Django
+  4. Install the following python libraries from the requirements.txt file.
 ```
-pip install django djangorestframework django-cors-headers
+pip install -r requirements.txt
 ```
   5. (OPTIONAL) Install Node.js if not installed on your PC/LAPTOP.
   6. Enter the frontend directory and run the following command.
 ```
+cd frontend
+```
+```
 npm install 
 ```
-(This should automatically install the required libraries.)
-  8. Enter the backend directory and run the following command to start the backend server.
+
+8. Enter the backend directory and run the following command to start the backend server.
+```
+cd backend
+```
 ```
 python manage.py migrate
 python manage.py runserver
 ```
   9. Enter the frontend directory and run the following command to start the frontend server.
 ```
-npm run start
+npm start
 ```
 
   10. (OPTIONAL) If you want to login into the admin system, use the following URL and credentials:
