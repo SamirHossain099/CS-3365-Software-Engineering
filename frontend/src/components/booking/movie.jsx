@@ -90,6 +90,10 @@ function Movie() {
             return;
         }
 
+        // Add console.log to debug
+        console.log('Selected showtime:', showtime);
+        console.log('Theater location:', showtime.theater_location);
+
         // Navigate to checkout page with necessary information
         navigate('/checkout', {
             state: {
@@ -187,6 +191,7 @@ function Movie() {
                     <div className="movie-metadata">
                         <p>Rating: {movie.rating}/5</p>
                         <p>Duration: {movie.duration} minutes</p>
+                        <p>Status: {movie.upcoming ? 'Coming Soon' : 'Now Playing'}</p>
                         <p>Genre: {movie.genre}</p>
                         <p>Director: {movie.director || 'Not available'}</p>
                         <p>Release Date: {new Date(movie.release_date).toLocaleDateString()}</p>

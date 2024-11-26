@@ -24,9 +24,10 @@ def get_movie_details(movie):
         'release_date': movie.release_date,
         'duration': movie.duration,
         'rating': movie.imdb_rating,
-        'director': movie.director,  # Added director
+        'director': movie.director,
         'image': movie.image.url if movie.image else None,
-        'location': movie.location
+        'location': movie.location,
+        'upcoming': movie.upcoming
     }
 
 def get_movie(movie_id):

@@ -48,12 +48,10 @@ def create_booking(request):
         if request.user.pk != int(user_id):
             return Response({'success': False, 'error': 'Unauthorized'}, status=403)
 
-        # Get the showtime
-        try:
-            showtime = Showtime.objects.get(pk=showtime_id)
-        except Showtime.DoesNotExist:
-            return Response({'success': False, 'error': 'Showtime not found'}, status=404)
-
+        # Get the showtime and its related theater information
+        showtime = Showtime.objects.get(pk=showtime_id)
+        theater_location = data.get('theaterLocation') or showtime.theater.location  # Fallback to showtime's theater location
+        
         # Create the booking
         booking = Booking.objects.create(
             user=request.user,

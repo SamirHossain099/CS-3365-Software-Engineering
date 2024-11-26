@@ -34,6 +34,9 @@ function CheckoutPage() {
         theaterLocation
     } = location.state || {};
 
+    console.log('Theater Location:', theaterLocation);
+    console.log('Full location state:', location.state);
+
     // If no data, redirect to home
     if (!showtimeId) {
         navigate('/');
@@ -163,7 +166,7 @@ function CheckoutPage() {
                 <p>Movie: {movieTitle}</p>
                 <p>Date: {new Date(showDate).toLocaleDateString()}</p>
                 <p>Time: {showTime}</p>
-                <p>Theater: {theaterLocation}</p>
+                <p>Theater: {theaterLocation || 'Location not available'}</p>
                 <p>Number of Tickets: {ticketCount}</p>
                 <p>Price per Ticket: ${ticketPrice}</p>
                 <p>Total Price: ${(ticketCount * ticketPrice).toFixed(2)}</p>
