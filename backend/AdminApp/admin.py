@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.db.models import Count
+from django.db.models import Count, Sum
 from .models import AdminLog
 from UserApp.models import User
 from MovieApp.models import Movie
@@ -26,6 +26,8 @@ class AdminLogAdmin(admin.ModelAdmin):
         
         # Booking Statistics
         extra_context['total_bookings'] = Booking.objects.count()
+        total_tickets = Booking.objects.aggregate(Sum('ticket_count'))['ticket_count__sum'] or 0
+        extra_context['total_tickets'] = total_tickets
         
         # Review Statistics
         extra_context['total_reviews'] = Review.objects.count()

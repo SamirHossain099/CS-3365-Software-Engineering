@@ -202,36 +202,45 @@ function Movie() {
             </div>
 
             {/* Booking section with showtime selection and ticket count */}
-            <div className="booking-section">
-                <h2>Book Tickets</h2>
-                <select 
-                    value={selectedShowtime || ''} 
-                    onChange={(e) => setSelectedShowtime(e.target.value)}
-                >
-                    <option value="">Select a showtime</option>
-                    {showtimes.map(showtime => (
-                        <option key={showtime.showtime_id} value={showtime.showtime_id}>
-                            {new Date(showtime.show_date).toLocaleDateString()} at {showtime.show_time} 
-                            - {showtime.theater_location} (${showtime.ticket_price})
-                        </option>
-                    ))}
-                </select>
-                
-                <div className="ticket-count">
-                    <label>Number of tickets:</label>
-                    <input
-                        type="number"
-                        min="1"
-                        max="10"
-                        value={ticketCount}
-                        onChange={(e) => setTicketCount(parseInt(e.target.value))}
-                    />
-                </div>
+            {!movie.upcoming && (
+                <div className="booking-section">
+                    <h2>Book Tickets</h2>
+                    <select 
+                        value={selectedShowtime || ''} 
+                        onChange={(e) => setSelectedShowtime(e.target.value)}
+                    >
+                        <option value="">Select a showtime</option>
+                        {showtimes.map(showtime => (
+                            <option key={showtime.showtime_id} value={showtime.showtime_id}>
+                                {new Date(showtime.show_date).toLocaleDateString()} at {showtime.show_time} 
+                                - {showtime.theater_location} (${showtime.ticket_price})
+                            </option>
+                        ))}
+                    </select>
+                    
+                    <div className="ticket-count">
+                        <label>Number of tickets:</label>
+                        <input
+                            type="number"
+                            min="1"
+                            max="10"
+                            value={ticketCount}
+                            onChange={(e) => setTicketCount(parseInt(e.target.value))}
+                        />
+                    </div>
 
-                <button onClick={handlePurchase} className="purchase-button">
-                    Purchase Tickets
-                </button>
-            </div>
+                    <button onClick={handlePurchase} className="purchase-button">
+                        Purchase Tickets
+                    </button>
+                </div>
+            )}
+
+            {movie.upcoming && (
+                <div className="coming-soon-message">
+                    <h2>Coming Soon</h2>
+                    <p>This movie is not yet available for booking. Check back later!</p>
+                </div>
+            )}
 
             {/* Reviews section */}
             <div className="reviews-section">
