@@ -107,31 +107,26 @@ class User(AbstractUser):
             if cls.objects.filter(email=email).exists():
                 return False
             
-            user_data = {
-                'name': name,
-                'email': email,
-                'password': password,
-                'address': address,
-                'phone': phone_number
-            }
+            user = cls.objects.create_user(
+                email=email,
+                name=name,
+                password=password,
+                address=address,
+                phone=phone_number
+            )
             
-            # Add payment information if provided
             if payment_info:
                 if payment_info.get('type') == 'credit_card':
-                    user_data.update({
-                        'has_credit_card': True,
-                        'credit_card_number': payment_info.get('card_number'),
-                        'credit_card_expiration': payment_info.get('expiration_date'),
-                        'credit_card_cvv': payment_info.get('cvv'),
-                        'credit_card_billing': payment_info.get('billing_address')
-                    })
+                    user.has_credit_card = True
+                    user.credit_card_number = payment_info.get('card_number')
+                    user.credit_card_expiration = payment_info.get('expiration_date')
+                    user.credit_card_cvv = payment_info.get('cvv')
+                    user.credit_card_billing = payment_info.get('billing_address')
                 elif payment_info.get('type') == 'paypal':
-                    user_data.update({
-                        'has_paypal': True,
-                        'paypal_email': payment_info.get('email')
-                    })
+                    user.has_paypal = True
+                    user.paypal_email = payment_info.get('email')
+                user.save()
             
-            user = cls.objects.create(**user_data)
             return True
         except Exception as e:
             print(f"Registration error: {str(e)}")  # Add debugging

@@ -1,5 +1,5 @@
 // Importing the various functions from react libraries alongside CSS styling.
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./signup.css";
 
@@ -8,6 +8,13 @@ function SignUpIn() {
     const [isSignIn, setIsSignIn] = useState(true);
     const [error, setError] = useState('');
     const navigate = useNavigate();
+
+    // Add useEffect to check existing session on component mount
+    useEffect(() => {
+        // Clear any existing session when the component mounts
+        localStorage.removeItem('user');
+        console.log('Cleared existing user session');
+    }, []);
 
     // Function that handles the switch between Sign-In and Sign-Up
     const handleToggle = () => {
@@ -20,28 +27,21 @@ function SignUpIn() {
         e.preventDefault();
         setError('');
 
-        // variables for the information needed for the backend.
-        const email = e.target.email.value;
+        const email = e.target.email.value.trim().toLowerCase();
         const password = e.target.password.value;
         const name = isSignIn ? null : e.target.name.value;
         const address = isSignIn ? null : e.target.address.value;
         const phone = isSignIn ? null : e.target.phone.value;
 
         try {
-            // Add the full URL
             const baseUrl = 'http://localhost:8000';
             const endpoint = isSignIn ? `${baseUrl}/users/login/` : `${baseUrl}/users/register/`;
+            
             const body = isSignIn 
                 ? { email, password }
-                : { 
-                    name,
-                    email,
-                    password,
-                    address,
-                    phone: phone
-                  };
+                : { name, email, password, address, phone };
             
-            console.log('Sending request to:', endpoint, 'with body:', body);
+            console.log('Attempting', isSignIn ? 'login' : 'registration', 'for:', { email });
 
             const response = await fetch(endpoint, {
                 method: 'POST',
@@ -49,23 +49,55 @@ function SignUpIn() {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json',
                 },
-                credentials: 'include', // Important for handling cookies
+                credentials: 'include',
                 body: JSON.stringify(body)
             });
 
             const data = await response.json();
+            console.log('Server response:', data);
 
-            // Error handling
             if (!response.ok) {
                 throw new Error(data.error || 'Server error');
             }
 
-            // If data gets sent and good response, then navigate to the home page for user.
-            localStorage.setItem('user', JSON.stringify(data.user));
+            // For registration success, attempt immediate login
+            if (!isSignIn && data.success) {
+                console.log('Registration successful, attempting login...');
+                const loginResponse = await fetch(`${baseUrl}/users/login/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ email, password })
+                });
+
+                const loginData = await loginResponse.json();
+                console.log('Login response:', loginData);
+
+                if (!loginResponse.ok) {
+                    throw new Error(loginData.error || 'Failed to login after registration');
+                }
+
+                if (!loginData.user) {
+                    throw new Error('No user data received from login');
+                }
+
+                localStorage.setItem('user', JSON.stringify(loginData.user));
+            } else if (isSignIn) {
+                // Handle direct login
+                if (!data.user) {
+                    throw new Error('No user data received from login');
+                }
+                localStorage.setItem('user', JSON.stringify(data.user));
+            }
+
+            console.log('Successfully stored user data');
             navigate("/home");
         } catch (error) {
-            console.error("Error:", error);
-            setError(error.message || "An error occurred while connecting to the server");
+            console.error("Error during authentication:", error);
+            setError(error.message);
+            localStorage.removeItem('user');
         }
     }
 

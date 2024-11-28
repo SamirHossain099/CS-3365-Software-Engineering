@@ -96,9 +96,16 @@ class RegisterUserView(View):
             )
             
             if success:
+                # Get the newly created user
+                user = User.objects.get(email=email)
                 return JsonResponse({
                     'success': True,
-                    'message': 'User registered successfully'
+                    'message': 'User registered successfully',
+                    'user': {
+                        'id': user.user_id,
+                        'email': user.email,
+                        'name': user.name
+                    }
                 }, status=201)
             else:
                 return JsonResponse({
@@ -114,8 +121,8 @@ class RegisterUserView(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LoginUserView(APIView):
-    authentication_classes = []  # Disable authentication for login
-    permission_classes = []      # Disable permissions for login
+    authentication_classes = []
+    permission_classes = []
 
     def post(self, request):
         try:
@@ -128,8 +135,12 @@ class LoginUserView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Use email as username since we're using email for authentication
-            user = authenticate(request, username=email, password=password)
+            # Change this line to use email directly
+            user = authenticate(request, email=email, password=password)
+            
+            # Add debug logging
+            print(f"Login attempt for email: {email}")
+            print(f"User authenticated: {user is not None}")
             
             if user is not None:
                 login(request, user)
@@ -141,8 +152,11 @@ class LoginUserView(APIView):
                     }
                 }, status=status.HTTP_200_OK)
             else:
+                # Check if user exists to provide better error message
+                user_exists = User.objects.filter(email=email).exists()
+                error_msg = 'Invalid password' if user_exists else 'User not found'
                 return Response(
-                    {'error': 'Invalid email or password'}, 
+                    {'error': error_msg}, 
                     status=status.HTTP_401_UNAUTHORIZED
                 )
                 
