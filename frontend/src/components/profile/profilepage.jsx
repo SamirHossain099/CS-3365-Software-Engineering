@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './profilepage.css';
 
 function ProfilePage() {
+    // Navigation variable
+    const navigate = useNavigate();
     const [userDetails, setUserDetails] = useState({
         name: '',
         email: '',
@@ -115,6 +118,11 @@ function ProfilePage() {
         }));
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        navigate('/');
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -176,6 +184,7 @@ function ProfilePage() {
                             <span>{userDetails.phone_number}</span>
                         </div>
                         <button onClick={() => setIsEditing(true)}>Edit Profile</button>
+                        <button onClick={handleLogout}>Logout</button>
                     </>
                 ) : (
                     // Edit Mode
