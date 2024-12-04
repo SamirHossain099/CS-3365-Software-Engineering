@@ -21,7 +21,7 @@ pip install virtualenv
 virtualenv myenv
 ```
 
-2. Activate the virtual environment
+2. Activate the virtual environment (NOTE IF VIRTUAL ENVIRONMENT ERRORS OCCUR, you can still run without it. It is just good practice to implement.)
 
 ```
 myenv\Scripts\activate
