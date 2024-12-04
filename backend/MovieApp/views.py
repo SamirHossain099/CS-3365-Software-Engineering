@@ -41,7 +41,7 @@ def get_movie_reviews(request, movie_id):
     try:
         movie = Movie.objects.get(movie_id=movie_id)
         movie_details = get_movie_details(movie)
-        reviews = Review.objects.filter(movie=movie)  # Changed from movie_id to movie
+        reviews = Review.objects.filter(movie=movie)
         review_list = [get_review_details(review) for review in reviews]
         
         print(f"Movie details: {movie_details}")
