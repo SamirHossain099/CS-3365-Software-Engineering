@@ -7,6 +7,7 @@ from MovieApp.models import Movie
 import json
 from django.db import transaction
 from django.utils import timezone
+import traceback
 
 # List all showtimes
 class ShowtimeListView(View):
@@ -87,12 +88,33 @@ class ShowtimesByMovieView(View):
         try:
             movie = Movie.objects.get(pk=int(movie_id))
             showtimes = Showtime.objects.filter(movie=movie).order_by('-show_date', '-show_time')
-            data = list(showtimes.values(
-                'showtime_id', 'show_date', 'show_time', 'ticket_price', 'available_seats'
-            ))
+            
+            # Debug print
+            print(f"Found {showtimes.count()} showtimes for movie {movie_id}")
+            
+            data = []
+            for showtime in showtimes:
+                showtime_data = {
+                    'showtime_id': showtime.showtime_id,
+                    'show_date': showtime.show_date,
+                    'show_time': showtime.show_time,
+                    'ticket_price': str(showtime.ticket_price),
+                    'available_seats': showtime.available_seats,
+                    'theater_location': movie.location  # Use movie's location instead
+                }
+                data.append(showtime_data)
+            
+            # Debug print
+            print(f"Prepared showtime data: {data}")
+            
             return JsonResponse({'showtimes': data}, safe=False)
-        except (TypeError, ValueError, Movie.DoesNotExist):
+        except (TypeError, ValueError, Movie.DoesNotExist) as e:
+            print(f"Error in ShowtimesByMovieView: {str(e)}")
             return JsonResponse({'success': False, 'error': 'Invalid movie_id'}, status=400)
+        except Exception as e:
+            print(f"Unexpected error in ShowtimesByMovieView: {str(e)}")
+            print(f"Traceback: {traceback.format_exc()}")
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 # Retrieve showtimes by theater location
 class ShowtimesByTheaterView(View):
