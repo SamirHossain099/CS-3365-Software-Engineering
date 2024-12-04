@@ -135,7 +135,6 @@ class LoginUserView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Change this line to use email directly
             user = authenticate(request, email=email, password=password)
             
             # Add debug logging
