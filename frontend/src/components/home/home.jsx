@@ -228,6 +228,7 @@ function Home() {
                 {/* Theater 2 section */}
                 <div className="theater-section">
                     <h2>Amarillo, TX</h2>
+                    <h3>Now Playing</h3>
                     <div className="movies-container">
                         {theater2Movies.now.map(movie => (
                             <MovieCard key={movie.movie_id} movie={movie} />
@@ -244,6 +245,7 @@ function Home() {
                 {/* Theater 3 section */}
                 <div className="theater-section">
                     <h2>Levelland, TX</h2>
+                    <h3>Now Playing</h3>
                     <div className="movies-container">
                         {theater3Movies.now.map(movie => (
                             <MovieCard key={movie.movie_id} movie={movie} />
@@ -260,6 +262,7 @@ function Home() {
                 {/* Theater 4 section */}
                 <div className="theater-section">
                     <h2>Plainview, TX</h2>
+                    <h3>Now Playing</h3>
                     <div className="movies-container">
                         {theater4Movies.now.map(movie => (
                             <MovieCard key={movie.movie_id} movie={movie} />
@@ -276,6 +279,7 @@ function Home() {
                 {/* Theater 5 section */}
                 <div className="theater-section">
                     <h2>Snyder, TX</h2>
+                    <h3>Now Playing</h3>
                     <div className="movies-container">
                         {theater5Movies.now.map(movie => (
                             <MovieCard key={movie.movie_id} movie={movie} />
@@ -292,6 +296,7 @@ function Home() {
                 {/* Theater 6 section */}
                 <div className="theater-section">
                     <h2>Abiliene, TX</h2>
+                    <h3>Now Playing</h3>
                     <div className="movies-container">
                         {theater6Movies.now.map(movie => (
                             <MovieCard key={movie.movie_id} movie={movie} />
