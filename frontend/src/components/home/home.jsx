@@ -92,7 +92,6 @@ function Home() {
         navigate(`/movie/${movieId}`);
     }
 
-    // Add this new function to handle search
     const handleSearch = (event) => {
         const term = event.target.value;
         setSearchTerm(term);

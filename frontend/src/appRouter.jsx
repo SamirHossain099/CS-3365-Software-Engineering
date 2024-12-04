@@ -5,6 +5,7 @@ import Home from "./components/home/home";
 import ProfilePage from "./components/profile/profilepage";
 import Movie from "./components/booking/movie";
 import Checkout from "./components/checkout/checkout";
+
 function AppRouter() {
     return (
         <Router>
