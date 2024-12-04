@@ -12,6 +12,8 @@ electronic ticket generation, and user movie reviews.
 
 Please have [Node.js](https://nodejs.org/en) and [Python](https://python.org/) installed to use the installation process below.
 
+Use Command Prompt on Windows instead of Powershell.
+
 ## Installation
 
 1. First create a virtual environment for python libraries.
@@ -44,7 +46,7 @@ cd frontend
 npm install 
 ```
 
-8. Enter the backend directory and run the following command to start the backend server.
+8. Open up another terminal and enter the backend directory and run the following command to start the backend server.
 
 ```
 cd backend
